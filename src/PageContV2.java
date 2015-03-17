@@ -4,6 +4,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -59,7 +61,11 @@ public class PageContV2 {
 		long time_cost=end-begin; //unit: ms
 		System.out.println("Time cost: "+Long.toString(time_cost)+"ms");
 	}
-	
+	//compare the result between approximation pathcont and pathcont
+	public static void Compare()
+	{
+		
+	}
 	/* if graph with weight, adj_matrix element is weight, otherwise 1
 	 * adj_matrix[i][j]=1 if exits edge(j,i)
 	 *    datafile: firstline: Node: 34
@@ -356,4 +362,42 @@ public class PageContV2 {
 		return similarity;
 	}
 
+	public static double[] approx_pathcont(int v_index,SparseMatrix adj_matirx, double alpha,double theta, double pmax)
+	{
+		int n=adj_matirx.n_rows;
+		double[] p=new double[n];
+		Arrays.fill(p,0.0);
+		double[] r=new double[n];
+		Arrays.fill(r,0.0);
+		r[v_index]=1.0;
+		
+		LinkedList<Integer> queue=new LinkedList<Integer>();
+		queue.offer(v_index);
+		while(!queue.isEmpty())
+		{
+			int u_index=queue.poll();
+			//pushback(u)
+			p[u_index]+=alpha*r[u_index];
+			r[u_index]=0;
+			//TODO: for each w such that w->u
+			LinkedList<SparseMatrixEntry> ws=adj_matirx.rows[u_index];
+			for(SparseMatrixEntry entry:ws)
+			{
+				r[entry.index]+=(1-alpha)*r[u_index]/adj_matirx.cols[entry.index].size();
+				if(r[entry.index]>theta)	
+					queue.offer(entry.index);
+			}
+			if(L1Distance(p)>=pmax)	break;
+		}
+		
+		return p;
+	}
+	//||p||1: L1-Distance of p
+	public static double L1Distance(double[] p)
+	{
+		double sum=0.0;
+		for(int i=0;i<p.length;i++)
+			sum+=p[i];
+		return sum;
+	}
 }

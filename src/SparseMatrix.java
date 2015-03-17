@@ -314,7 +314,7 @@ public class SparseMatrix
 				SparseMatrixEntry entry=(SparseMatrixEntry)it.next();
 				BigDecimal b=new   BigDecimal(entry.value);
 				double value=b.setScale(10, BigDecimal.ROUND_HALF_UP).doubleValue(); 
-				fw.write(entry.index+":"+value+" ");
+				fw.write(entry.index+":"+value+" "); //\s
 			}
 			fw.write("\n");
 		}
