@@ -48,12 +48,12 @@ public class PageContV2 {
 		/**
 		 * 
 		 */
-		SparseMatrix adj_matrix=init_adj_matrix(datafile,weighted);		
-		SparseMatrix tran_matrix=init_tran_matrix(adj_matrix);
-		double[] pageRank=compute_pageRank_thresh(tran_matrix);
-		SparseMatrix pathContribution=compute_pathcont_thresh(tran_matrix);	
-		SparseMatrix pageContribution=compute_pagecont(pageRank,pathContribution);
-		SparseMatrix simi_matrix=compute_similarity(pageContribution);
+//		SparseMatrix adj_matrix=init_adj_matrix(datafile,weighted);		
+//		SparseMatrix tran_matrix=init_tran_matrix(adj_matrix);
+//		double[] pageRank=compute_pageRank_thresh(tran_matrix);
+//		SparseMatrix pathContribution=compute_pathcont_thresh(tran_matrix);	
+//		SparseMatrix pageContribution=compute_pagecont(pageRank,pathContribution);
+//		SparseMatrix simi_matrix=compute_similarity(pageContribution);
 			
 //		adj_matrix.save_to_file(outfile+"adjMatrix.txt");
 //		tran_matrix.save_to_file(outfile+"tranMatrix.txt");
