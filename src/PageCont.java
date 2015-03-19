@@ -111,7 +111,8 @@ public class PageCont {
 				{
 					new_prv[i]+=tran_matrix[i][j]*prv[j];
 				}
-				new_prv[i]=new_prv[i]*DAMPLE_FACTOR+(1-DAMPLE_FACTOR)/n;
+				//new_prv[i]=new_prv[i]*DAMPLE_FACTOR+(1-DAMPLE_FACTOR)/n;
+				new_prv[i]=new_prv[i]*DAMPLE_FACTOR+(1-DAMPLE_FACTOR);
 			}
 			System.arraycopy(new_prv,0,prv,0,n);			
 		}
@@ -139,7 +140,8 @@ public class PageCont {
 				{
 					new_prv[i]+=tran_matrix[i][j]*prv[j];
 				}
-				new_prv[i]=new_prv[i]*DAMPLE_FACTOR+(1-DAMPLE_FACTOR)/n;
+				//new_prv[i]=new_prv[i]*DAMPLE_FACTOR+(1-DAMPLE_FACTOR)/n;
+				new_prv[i]=new_prv[i]*DAMPLE_FACTOR+(1-DAMPLE_FACTOR);
 			}
 			
 			if(check_for_convergence(new_prv, prv) == true)

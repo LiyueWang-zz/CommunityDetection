@@ -268,16 +268,43 @@ public class SparseMatrix
 		return new SparseMatrix(res_rows,res_cols);	
 	}
 
-	double getEntry(int index_i,int index_j)
+	SparseMatrixEntry getRowEntry(int index_i,int index_j)
 	{
-		double value=0.0;
 		for(Iterator<SparseMatrixEntry> iter = this.rows[index_i].iterator(); iter.hasNext(); )
 		{
-			SparseMatrixEntry entry=iter.next();
+			SparseMatrixEntry entry=(SparseMatrixEntry)iter.next();
 			if(entry.index==index_j)
-				value=entry.value;
+				return entry;
 		}
-		return value;
+		return null;
+	}
+	
+	SparseMatrixEntry getColEntry(int index_i,int index_j)
+	{
+		for(Iterator<SparseMatrixEntry> iter = this.cols[index_j].iterator(); iter.hasNext(); )
+		{
+			SparseMatrixEntry entry=(SparseMatrixEntry)iter.next();
+			if(entry.index==index_i)
+				return entry;
+		}
+		return null;
+	}
+	
+	void addEntry(int index_i,int index_j,double value)
+	{
+		//before add, should check whether exist first
+		this.rows[index_i].add(new SparseMatrixEntry(value,index_j));
+		this.cols[index_j].add(new SparseMatrixEntry(value,index_i));
+		return;
+	}
+	
+	void setEntry(int index_i,int index_j,double value)
+	{
+		this.rows[index_i].remove(this.getRowEntry(index_i, index_j));
+		this.cols[index_j].remove(this.getColEntry(index_i, index_j));
+		this.rows[index_i].add(new SparseMatrixEntry(value,index_j));
+		this.cols[index_j].add(new SparseMatrixEntry(value,index_i));
+		return;
 	}
 	
 	void multiply_scalar(double x)

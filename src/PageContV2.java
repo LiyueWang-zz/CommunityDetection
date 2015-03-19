@@ -25,11 +25,13 @@ public class PageContV2 {
 	public static void main(String[] args) throws Exception
 	{
 		long begin=System.currentTimeMillis();	
-
-//		String datafile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\testbenchmark\\com-amazon.ungraph0.05.small.reindex.txt";	
-//		String outfile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\testbenchmark\\com-amazon.ungraph0.05.small.reindex_sparse_";				
-//		boolean weighted=false;	
+		long mbegin=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
 		
+		String datafile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\testbenchmark\\com-amazon.ungraph0.05.small.reindex.txt";	
+		String outfile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\testbenchmark\\com-amazon.ungraph0.05.small.reindex_sparse_";				
+		boolean weighted=false;	
+		
+		/*
 		if(args.length!=2)
 		{
 			System.out.println("Usage: PageContV2 infile weighted ");
@@ -41,30 +43,66 @@ public class PageContV2 {
 		boolean weighted=false;
 		if(args[1]=="true")
 			weighted=true;
+		*/
 		
+		/**
+		 * 
+		 */
 		SparseMatrix adj_matrix=init_adj_matrix(datafile,weighted);		
 		SparseMatrix tran_matrix=init_tran_matrix(adj_matrix);
 		double[] pageRank=compute_pageRank_thresh(tran_matrix);
 		SparseMatrix pathContribution=compute_pathcont_thresh(tran_matrix);	
 		SparseMatrix pageContribution=compute_pagecont(pageRank,pathContribution);
 		SparseMatrix simi_matrix=compute_similarity(pageContribution);
+			
+//		adj_matrix.save_to_file(outfile+"adjMatrix.txt");
+//		tran_matrix.save_to_file(outfile+"tranMatrix.txt");
+//		PageRankClustering.save_pr(pageRank,outfile+"pageRank.txt");
+//		pathContribution.save_to_file(outfile+"pathCont.txt");
+//		pageContribution.save_to_file(outfile+"pageCont.txt");
+//		simi_matrix.save_to_file(outfile+"simiMatrix.txt");
+		/**
+		 * Approxmation Version
+		 */
+//		SparseMatrix adj_matrix=init_adj_matrix(datafile,weighted);	
+//		SparseMatrix tran_matrix=init_tran_matrix(adj_matrix);
+//		double[] pageRank=compute_pageRank_thresh(tran_matrix);
+//		double[][] pathContributionV1=approx_pathcont_matrix(adj_matrix,1-DAMPLE_FACTOR,0.01,1.0);
+//		SparseMatrix pathContribution=SparseMatrix.create_from_2d_array(pathContributionV1);
+//		SparseMatrix pageContribution=compute_pagecont(pageRank,pathContribution);
+//		SparseMatrix simi_matrix=compute_similarity(pageContribution);
 		
-		adj_matrix.save_to_file(outfile+"adjMatrix.txt");
-		tran_matrix.save_to_file(outfile+"tranMatrix.txt");
-		PageRankClustering.save_pr(pageRank,outfile+"pageRank.txt");
-		pathContribution.save_to_file(outfile+"pathCont.txt");
-		pageContribution.save_to_file(outfile+"pageCont.txt");
-		simi_matrix.save_to_file(outfile+"simiMatrix.txt");
-				
+//		PageRankClustering.save_to_file(pathContribution,outfile+"Approx_pathCont.txt");
+//		SparseMatrix pathContribution=approx_pathcont(adj_matrix,1-DAMPLE_FACTOR,0.01,1.0);	
+//		pathContribution.save_to_file(outfile+"Approx_SM_pathCont.txt");
+					
+		/**
+		 * Temporary test
+		 */
+//		Compare();
+		
+		//test memory
+		long mend=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+		long memory_cost=mend-mbegin;
+		System.out.println("Memory cost: "+memory_cost+" bytes.");
+		
 		//test time
 		long end=System.currentTimeMillis();
 		long time_cost=end-begin; //unit: ms
 		System.out.println("Time cost: "+Long.toString(time_cost)+"ms");
 	}
 	//compare the result between approximation pathcont and pathcont
-	public static void Compare()
+	public static void Compare()throws IOException
 	{
+		String datafile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\testbenchmark\\com-amazon.ungraph0.05.small.reindex.txt";	
+//		String datafile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\testbenchmark\\graph9.txt";	
+//		String outfile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\testbenchmark\\com-amazon.ungraph0.05.small.reindex_sparse_";				
+		boolean weighted=false;	
+		SparseMatrix adj_matrix=init_adj_matrix(datafile,weighted);	
+		double alpha=1-DAMPLE_FACTOR;
 		
+		for(int i=0;i<15;i++)
+			approx_pathcont(i,adj_matrix,alpha,0.01,15);
 	}
 	/* if graph with weight, adj_matrix element is weight, otherwise 1
 	 * adj_matrix[i][j]=1 if exits edge(j,i)
@@ -98,14 +136,14 @@ public class PageContV2 {
 			if(weighted)
 			{
 				double value=Double.parseDouble(line.split(" ")[2]);
-				matrix.rows[sindex].add( new SparseMatrixEntry(value, tindex) ); 
-				matrix.cols[tindex].add( new SparseMatrixEntry(value, sindex) );
+				matrix.rows[tindex].add( new SparseMatrixEntry(value, sindex) ); 
+				matrix.cols[sindex].add( new SparseMatrixEntry(value, tindex) );
 			}
 			else
 			{
 				double value=1.0;
-				matrix.rows[sindex].add( new SparseMatrixEntry(value, tindex) );
-				matrix.cols[tindex].add( new SparseMatrixEntry(value, sindex) );
+				matrix.rows[tindex].add( new SparseMatrixEntry(value, sindex) );
+				matrix.cols[sindex].add( new SparseMatrixEntry(value, tindex) );
 			}
 		}
 		matrix.keep_sort();
@@ -163,7 +201,8 @@ public class PageContV2 {
 					SparseMatrixEntry entry=(SparseMatrixEntry)iter.next();
 					new_prv[i]+=(entry.value)*prv[entry.index];
 				}
-				new_prv[i]=new_prv[i]*DAMPLE_FACTOR+(1-DAMPLE_FACTOR)/n;
+				//new_prv[i]=new_prv[i]*DAMPLE_FACTOR+(1-DAMPLE_FACTOR)/n;
+				new_prv[i]=new_prv[i]*DAMPLE_FACTOR+(1-DAMPLE_FACTOR); //No divide n
 			}
 			
 			if(check_for_convergence(new_prv, prv) == true)
@@ -221,7 +260,7 @@ public class PageContV2 {
 			{
 				SparseMatrixEntry entry=(SparseMatrixEntry)iter.next();
 				int index_j=entry.index;
-				double pathcmjj=pathcm.getEntry(index_j, index_j);
+				double pathcmjj=pathcm.getRowEntry(index_j, index_j).value;
 				if(pathcmjj==0.0)
 					System.err.println("pathcm[j][j]==0.0!");
 				double value=prv[index_j]*(entry.value)/pathcmjj;
@@ -286,6 +325,7 @@ public class PageContV2 {
 		return converged;
 	}
 	
+	//compute similarity matrix using cosine similarity
 	public static SparseMatrix compute_similarity(SparseMatrix pagecm) throws IOException
 	{
 		int nodes_num=pagecm.n_cols;
@@ -315,6 +355,7 @@ public class PageContV2 {
 		return simi_matrix;
 	}
 	
+	//compute similarity between each pair of nodes
 	public static double cosine_similarity(LinkedList<SparseMatrixEntry> vec1,LinkedList<SparseMatrixEntry> vec2)
 	{
 		double similarity=0.0;
@@ -362,6 +403,7 @@ public class PageContV2 {
 		return similarity;
 	}
 
+	//An approximation algorithm[By Andersen et al] to compute path contribution vector
 	public static double[] approx_pathcont(int v_index,SparseMatrix adj_matirx, double alpha,double theta, double pmax)
 	{
 		int n=adj_matirx.n_rows;
@@ -373,12 +415,13 @@ public class PageContV2 {
 		
 		LinkedList<Integer> queue=new LinkedList<Integer>();
 		queue.offer(v_index);
+		int cnt=0;
 		while(!queue.isEmpty())
 		{
 			int u_index=queue.poll();
+			cnt++;
 			//pushback(u)
 			p[u_index]+=alpha*r[u_index];
-			r[u_index]=0;
 			//TODO: for each w such that w->u
 			LinkedList<SparseMatrixEntry> ws=adj_matirx.rows[u_index];
 			for(SparseMatrixEntry entry:ws)
@@ -387,17 +430,140 @@ public class PageContV2 {
 				if(r[entry.index]>theta)	
 					queue.offer(entry.index);
 			}
-			if(L1Distance(p)>=pmax)	break;
+			r[u_index]=0;
+			if(L1Distance(p)>=pmax)	
+			{
+				System.out.println("break in >=pmax");
+				break;
+			}
 		}
-		
+		System.out.println("for node "+v_index+", # of pushback="+cnt);
+		for(int i=0;i<n;i++)
+		{
+			if(p[i]!=0.0)	
+			{
+				BigDecimal b=new   BigDecimal(p[i]);
+				double value=b.setScale(10, BigDecimal.ROUND_HALF_UP).doubleValue();
+				System.out.print(i+":"+value+" ");
+			}
+		}
+		System.out.println();
 		return p;
 	}
-	//||p||1: L1-Distance of p
+	
+	//An approximation algorithm[By Andersen et al] to compute path contribution matrix
+	public static double[][] approx_pathcont_matrix(SparseMatrix adj_matirx, double alpha,double theta, double pmax)
+	{
+		double[][] p=new double[adj_matirx.n_rows][adj_matirx.n_cols];
+		double[][] r=new double[adj_matirx.n_rows][adj_matirx.n_cols];
+		LinkedList<Integer>[] queue=new LinkedList[adj_matirx.n_rows];
+		for(int i=0;i<adj_matirx.n_rows;i++)
+		{
+			Arrays.fill(p[i],0.0);
+			Arrays.fill(r[i],0.0);
+			r[i][i]=1.0;
+			queue[i]=new LinkedList<Integer>(); 
+			queue[i].add(i);
+		}
+		int[] push_num=new int[adj_matirx.n_rows];
+		Arrays.fill(push_num,0);
+		
+		for(int i=0;i<adj_matirx.n_rows;i++)
+		{
+			while(!queue[i].isEmpty())
+			{
+				int u_index=queue[i].poll();
+				push_num[i]++;
+				//pushback(u)
+				p[i][u_index]+=alpha*r[i][u_index];
+				//TODO: for each w such that w->u
+				LinkedList<SparseMatrixEntry> ws=adj_matirx.rows[u_index];
+				for(SparseMatrixEntry entry:ws)
+				{
+					r[i][entry.index]+=(1-alpha)*r[i][u_index]/adj_matirx.cols[entry.index].size();
+					if(r[i][entry.index]>theta)	
+						queue[i].offer(entry.index);
+				}
+				r[i][u_index]=0.0;
+//				if(L1Distance(p[i])>=pmax)	
+//				{
+//					System.out.println("break in p[i]>=pmax");
+//					break;
+//				}
+			}
+		}
+//		for(int i=0;i<push_num.length;i++)
+//			System.out.println("For node "+i+", the push#="+push_num[i]);
+		return p;
+	}
+	
+	//Useless: much slower than approx_pathcont_matrix
+	public static SparseMatrix approx_pathcont(SparseMatrix adj_matirx, double alpha,double theta, double pmax)
+	{
+		SparseMatrix p=SparseMatrix.create_zero_matrix(adj_matirx.n_rows,adj_matirx.n_cols);
+		SparseMatrix r=SparseMatrix.create_identity_matrix(adj_matirx.n_rows,adj_matirx.n_cols);
+		LinkedList<Integer>[] queue=new LinkedList[adj_matirx.n_rows];
+		//Arrays.fill(queue,new LinkedList<Integer>());
+		for(int i=0;i<adj_matirx.n_rows;i++)
+		{
+			queue[i]=new LinkedList<Integer>(); 
+			queue[i].add(i);
+		}
+		
+		int[] push_num=new int[adj_matirx.n_rows];
+		
+		for(int i=0;i<adj_matirx.n_rows;i++)
+		{
+			while(!queue[i].isEmpty())
+			{
+				int u_index=queue[i].poll();
+				push_num[i]++;
+				//pushback(u)
+				double r_iu=r.getRowEntry(i, u_index).value;
+				if(p.getRowEntry(i, u_index)==null)
+					p.addEntry(i, u_index, alpha*r_iu);
+				else
+					p.setEntry(i, u_index, p.getRowEntry(i, u_index).value+alpha*r_iu);
+				r.setEntry(i, u_index, 0.0);
+				//TODO: for each w such that w->u
+				LinkedList<SparseMatrixEntry> ws=adj_matirx.rows[u_index];
+				for(SparseMatrixEntry entry:ws)
+				{
+					double addvalue=(1-alpha)*r_iu/adj_matirx.cols[entry.index].size();
+					if(r.getRowEntry(i, entry.index)!=null)
+						addvalue+=r.getRowEntry(i, entry.index).value;
+					r.setEntry(i,entry.index,addvalue);
+					if(addvalue>theta)
+						queue[i].offer(entry.index);
+				}
+//				if(L1Distance(p.rows[i])>=pmax)	
+//				{
+//					System.out.println("break in p[i]>=pmax");
+//					break;
+//				}
+			}
+		}
+		for(int i=0;i<push_num.length;i++)
+			System.out.println("For node "+i+", the push#="+push_num[i]);
+		p.keep_sort();
+		return p;
+		
+	}
+		
+	//compute L1-Distance of vector p: ||p||1
 	public static double L1Distance(double[] p)
 	{
 		double sum=0.0;
 		for(int i=0;i<p.length;i++)
 			sum+=p[i];
+		return sum;
+	}
+	//compute L1-Distance of vector p: ||p||1
+	public static double L1Distance(LinkedList<SparseMatrixEntry> pi)
+	{
+		double sum=0.0;
+		for(Iterator<SparseMatrixEntry> it=pi.iterator();it.hasNext();)
+			sum+=((SparseMatrixEntry)it.next()).value;
 		return sum;
 	}
 }
