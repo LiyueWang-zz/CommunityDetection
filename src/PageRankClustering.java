@@ -81,7 +81,7 @@ public class PageRankClustering {
 //		String datafile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\testbenchmark\\com-amazon.ungraph0.05.small.reindex.txt";		
 //		compareV1V2(datafile);
 		
-		System.out.println("Hello Word\t!");
+		System.out.println("Hello Word\t!??");
 		
 //		MyGraph mg=MyGraph.create_from_file(datafile);
 //		double[] pr=PageCont.compute_pageRank_thresh(mg, 0.85, null);
