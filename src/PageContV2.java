@@ -27,11 +27,11 @@ public class PageContV2 {
 		long begin=System.currentTimeMillis();	
 		long mbegin=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
 		
-		String datafile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\testbenchmark\\com-amazon.ungraph0.05.small.reindex.txt";	
-		String outfile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\testbenchmark\\com-amazon.ungraph0.05.small.reindex_sparse_";				
-		boolean weighted=false;	
+//		String datafile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\testbenchmark\\com-amazon.ungraph0.05.small.reindex.txt";	
+//		String outfile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\testbenchmark\\com-amazon.ungraph0.05.small.reindex_sparseMatrix_";				
+//		boolean weighted=false;	
 		
-		/*
+//		/*
 		if(args.length!=2)
 		{
 			System.out.println("Usage: PageContV2 infile weighted ");
@@ -39,14 +39,14 @@ public class PageContV2 {
 		}
 		
 		String datafile=args[0];
-		String outfile=datafile.substring(0,datafile.length()-4)+"_sparse_";
+		String outfile=datafile.substring(0,datafile.length()-4)+"_sparseMatrix_";
 		boolean weighted=false;
 		if(args[1]=="true")
 			weighted=true;
-		*/
+//		*/
 		
 		/**
-		 * 
+		 * Complete Version
 		 */
 //		SparseMatrix adj_matrix=init_adj_matrix(datafile,weighted);		
 //		SparseMatrix tran_matrix=init_tran_matrix(adj_matrix);
@@ -54,23 +54,27 @@ public class PageContV2 {
 //		SparseMatrix pathContribution=compute_pathcont_thresh(tran_matrix);	
 //		SparseMatrix pageContribution=compute_pagecont(pageRank,pathContribution);
 //		SparseMatrix simi_matrix=compute_similarity(pageContribution);
-			
+//			
 //		adj_matrix.save_to_file(outfile+"adjMatrix.txt");
 //		tran_matrix.save_to_file(outfile+"tranMatrix.txt");
-//		PageRankClustering.save_pr(pageRank,outfile+"pageRank.txt");
+//		save_pr(pageRank,outfile+"pageRank.txt");
 //		pathContribution.save_to_file(outfile+"pathCont.txt");
 //		pageContribution.save_to_file(outfile+"pageCont.txt");
 //		simi_matrix.save_to_file(outfile+"simiMatrix.txt");
 		/**
 		 * Approxmation Version
 		 */
-//		SparseMatrix adj_matrix=init_adj_matrix(datafile,weighted);	
-//		SparseMatrix tran_matrix=init_tran_matrix(adj_matrix);
-//		double[] pageRank=compute_pageRank_thresh(tran_matrix);
-//		double[][] pathContributionV1=approx_pathcont_matrix(adj_matrix,1-DAMPLE_FACTOR,0.01,1.0);
-//		SparseMatrix pathContribution=SparseMatrix.create_from_2d_array(pathContributionV1);
-//		SparseMatrix pageContribution=compute_pagecont(pageRank,pathContribution);
-//		SparseMatrix simi_matrix=compute_similarity(pageContribution);
+		SparseMatrix adj_matrix=init_adj_matrix(datafile,weighted);	
+		SparseMatrix tran_matrix=init_tran_matrix(adj_matrix);
+		double[] pageRank=compute_pageRank_thresh(tran_matrix);
+		double[][] pathContributionV1=approx_pathcont_matrix(adj_matrix,1-DAMPLE_FACTOR,0.01,1.0);
+		SparseMatrix pathContribution=SparseMatrix.create_from_2d_array(pathContributionV1);
+		SparseMatrix pageContribution=compute_pagecont(pageRank,pathContribution);
+		SparseMatrix simi_matrix=compute_similarity(pageContribution);
+		
+		String outfile_app=datafile.substring(0,datafile.length()-4)+"_approx_";
+		pathContribution.save_to_file(outfile_app+"pathCont.txt");
+		pageContribution.save_to_file(outfile_app+"pageCont.txt");
 		
 //		PageRankClustering.save_to_file(pathContribution,outfile+"Approx_pathCont.txt");
 //		SparseMatrix pathContribution=approx_pathcont(adj_matrix,1-DAMPLE_FACTOR,0.01,1.0);	
@@ -565,5 +569,20 @@ public class PageContV2 {
 		for(Iterator<SparseMatrixEntry> it=pi.iterator();it.hasNext();)
 			sum+=((SparseMatrixEntry)it.next()).value;
 		return sum;
+	}
+	
+	public static void save_pr(double[] pr,String outfile)throws IOException
+	{
+		FileWriter fw=new FileWriter(outfile);
+		int n=pr.length;
+		for(int i=0;i<n;i++)
+		{
+				BigDecimal b=new   BigDecimal(pr[i]);
+				double value=b.setScale(10, BigDecimal.ROUND_HALF_UP).doubleValue(); 
+				//TODO: align the numbers
+				fw.write(""+value+"\n");
+		}
+		
+		fw.close();
 	}
 }

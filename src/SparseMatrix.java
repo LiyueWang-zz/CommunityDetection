@@ -54,8 +54,11 @@ public class SparseMatrix
 		for(int row = 0; row < m.length; row++)
 			for(int col = 0; col < m[row].length; col++)
 			{
-				res.rows[row].add( new SparseMatrixEntry(m[row][col], col) );
-				res.cols[col].add( new SparseMatrixEntry(m[row][col], row) );
+				if(m[row][col]>0.0)
+				{
+					res.rows[row].add( new SparseMatrixEntry(m[row][col], col) );
+					res.cols[col].add( new SparseMatrixEntry(m[row][col], row) );
+				}
 			}
 
 		return res;
