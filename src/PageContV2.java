@@ -84,8 +84,6 @@ public class PageContV2 {
 		SparseMatrix pageContribution=compute_pagecont(pageRank,pathContribution);
 		SparseMatrix simi_matrix=compute_similarity(pageContribution);
 		
-		
-		
 		String outfile_app=datafile.substring(0,datafile.length()-4)+"_approx_";
 		pathContribution.save_to_file(outfile_app+"pathCont.txt");
 		pageContribution.save_to_file(outfile_app+"pageCont.txt");
@@ -109,7 +107,8 @@ public class PageContV2 {
 		long time_cost=end-begin; //unit: ms
 		System.out.println("Time cost: "+Long.toString(time_cost)+"ms");
 	}
-	//compare the result between approximation pathcont and pathcont
+	
+	//Useless:compare the result between approximation pathcont and pathcont
 	public static void Compare()throws IOException
 	{
 		String datafile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\testbenchmark\\com-amazon.ungraph0.05.small.reindex.txt";	
