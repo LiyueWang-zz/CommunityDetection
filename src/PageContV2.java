@@ -417,7 +417,7 @@ public class PageContV2 {
 	}
 
 	//An approximation algorithm[By Andersen et al] to compute path contribution vector
-	public static double[] approx_pathcont(int v_index,SparseMatrix adj_matirx, double alpha,double theta, double pmax,String outfile)
+	public static double[] approx_pathcont(int v_index,SparseMatrix adj_matirx, double alpha,double theta, double pmax,String outfile)throws IOException
 	{
 		FileWriter fw=new FileWriter(outfile);
 		
@@ -464,7 +464,7 @@ public class PageContV2 {
 			{
 				if(p[k]>0.0)
 				{
-					BigDecimal b=new   BigDecimal(p[i]);
+					BigDecimal b=new   BigDecimal(p[k]);
 					double value=b.setScale(10, BigDecimal.ROUND_HALF_UP).doubleValue(); 
 					//TODO: align the numbers
 					fw.write(k+":"+value+" ");
@@ -476,7 +476,7 @@ public class PageContV2 {
 			{
 				if(r[k]>0.0)
 				{
-					BigDecimal b=new   BigDecimal(r[i]);
+					BigDecimal b=new   BigDecimal(r[k]);
 					double value=b.setScale(10, BigDecimal.ROUND_HALF_UP).doubleValue(); 
 					//TODO: align the numbers
 					fw.write(k+":"+value+" ");
