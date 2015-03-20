@@ -63,16 +63,16 @@ public class ExpEvaluation {
 		ArrayList<Integer> nodes=new ArrayList<Integer>();
 		
 		//dblp-0.04: 2051
-//		dsName.add("dblp-0.04-cm");
-//		labelfile.add("/home/liyuew/Dropbox/CommunityDetection/dblp/com-dblp.top5000.cmty.clean0.04.reindex.txt");
-//		exfile.add("/home/liyuew/CentOS/test/dblp-0.04/");
-//		nodes.add(2051);
+		dsName.add("dblp-0.04-cm");
+		labelfile.add("/home/liyuew/Dropbox/CommunityDetection/dblp/com-dblp.top5000.cmty.clean0.04.reindex.txt");
+		exfile.add("/home/liyuew/CentOS/test/dblp-0.04/com-dblp.ungraph0.04.small.reindex_simiMatrix_cs_198_gmmcluster.txt");
+		nodes.add(2051);
 		
 		dsName.add("dblp-0.04-sm");
 		labelfile.add("/home/liyuew/Dropbox/CommunityDetection/dblp/com-dblp.top5000.cmty.clean0.04.reindex.txt");
 		exfile.add("/home/liyuew/CentOS/test/dblp-0.04/com-dblp.ungraph0.04.small.reindex_sparseMatrix_simiMatrix_cs_198_gmmcluster.txt");
 		nodes.add(2051);
-		
+
 		dsName.add("dblp-0.04-app-0.01");
 		labelfile.add("/home/liyuew/Dropbox/CommunityDetection/dblp/com-dblp.top5000.cmty.clean0.04.reindex.txt");
 		exfile.add("/home/liyuew/CentOS/test/dblp-0.04/com-dblp.ungraph0.04.small.reindex_approx_0.01_simiMatrix_cs_198_gmmcluster.txt");
@@ -81,6 +81,16 @@ public class ExpEvaluation {
 		dsName.add("dblp-0.04-app-0.005");
 		labelfile.add("/home/liyuew/Dropbox/CommunityDetection/dblp/com-dblp.top5000.cmty.clean0.04.reindex.txt");
 		exfile.add("/home/liyuew/CentOS/test/dblp-0.04/com-dblp.ungraph0.04.small.reindex_approx_0.005_simiMatrix_cs_198_gmmcluster.txt");
+		nodes.add(2051);
+		
+		dsName.add("dblp-0.04-app-0.001");
+		labelfile.add("/home/liyuew/Dropbox/CommunityDetection/dblp/com-dblp.top5000.cmty.clean0.04.reindex.txt");
+		exfile.add("/home/liyuew/CentOS/test/dblp-0.04/com-dblp.ungraph0.04.small.reindex_approx_0.001_simiMatrix_cs_198_gmmcluster.txt");
+		nodes.add(2051);
+		
+		dsName.add("dblp-0.04-app-0.0001");
+		labelfile.add("/home/liyuew/Dropbox/CommunityDetection/dblp/com-dblp.top5000.cmty.clean0.04.reindex.txt");
+		exfile.add("/home/liyuew/CentOS/test/dblp-0.04/com-dblp.ungraph0.04.small.reindex_approx_0.0001_simiMatrix_cs_198_gmmcluster.txt");
 		nodes.add(2051);
 		
 //		//youtube-0.05: 3774
