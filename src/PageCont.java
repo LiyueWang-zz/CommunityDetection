@@ -362,7 +362,8 @@ public class PageCont {
 		double[][] simi_matrix=new double[n][n];
 		for(int i=0;i<n;i++)
 		{
-			for(int j=0;j<n;j++)
+			simi_matrix[i][i]=1.0;
+			for(int j=i+1;j<n;j++)
 			{
 				simi_matrix[i][j]=cosine_similarity(pagecm[i],pagecm[j]);
 			}

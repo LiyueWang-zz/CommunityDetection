@@ -29,6 +29,7 @@ public class PageRankClustering {
 	public static void main(String[] args) throws Exception
 	{
 		long begin=System.currentTimeMillis();	
+		long mbegin=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
 		/*
 		 * Shabnam's code
 		 */
@@ -79,9 +80,8 @@ public class PageRankClustering {
 		//writeToFile(datafile,simi_matrix);
 		
 //		String datafile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\testbenchmark\\com-amazon.ungraph0.05.small.reindex.txt";		
-//		compareV1V2(datafile);
-		
-		System.out.println("Hello Word\t!??");
+		String datafile=args[0];
+		compareV1V2(datafile,begin);
 		
 //		MyGraph mg=MyGraph.create_from_file(datafile);
 //		double[] pr=PageCont.compute_pageRank_thresh(mg, 0.85, null);
@@ -93,6 +93,11 @@ public class PageRankClustering {
 //		double[][] pathcont_matrix=pathcont.get_2dim_array();
 //		writeToFile(datafile,pathcont_matrix);
 		
+		//test memory
+		long mend=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+		long memory_cost=mend-mbegin;
+		System.out.println("Memory cost: "+memory_cost+" bytes.");
+		
 		//test time
 		long end=System.currentTimeMillis();
 		long time_cost=end-begin; //unit: ms
@@ -100,7 +105,7 @@ public class PageRankClustering {
 	}
 
 	// compare the result between double[][] version and SparseMatrix version to make sure the correct of SparseMatrix version
-	public static void compareV1V2(String datafile) throws Exception
+	public static void compareV1V2(String datafile,long begin) throws Exception
 	{
 		//for PageContV1
 		//String datafile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\testbenchmark\\com-amazon.ungraph0.05.small.reindex.txt";		
@@ -108,16 +113,20 @@ public class PageRankClustering {
 		boolean weighted=false;	
 		
 		double[][] adj_matrix=PageCont.init_adj_matrix(datafile,weighted);
-//		save_to_file(adj_matrix,outfile+"adjMatrix1.txt");
 		double[][] tran_matrix=PageCont.init_tran_matrix(adj_matrix);
-		double[] pageRank=PageCont.compute_pageRank_thresh(tran_matrix);
 		double[][] pathContribution=PageCont.compute_pathcont_thresh(tran_matrix);
+		
+		long end=System.currentTimeMillis();
+		long time_cost=end-begin; //unit: ms
+		System.out.println("Time cost-1: "+Long.toString(time_cost)+"ms");
+		
+		double[] pageRank=PageCont.compute_pageRank_thresh(tran_matrix);
 		double[][] pageContribution=PageCont.compute_pagecont(pageRank,pathContribution);
 		double[][] simi_matrix=PageCont.compute_similarity(pageContribution);
 		
-//		save_to_file(adj_matrix,outfile+"adjMatrix.txt");
-//		save_to_file(tran_matrix,outfile+"tranMatrix.txt");
-//		save_pr(pageRank,outfile+"pageRank.txt");
+		save_to_file(adj_matrix,outfile+"adjMatrix.txt");
+		save_to_file(tran_matrix,outfile+"tranMatrix.txt");
+		save_pr(pageRank,outfile+"pageRank.txt");
 		save_to_file(pathContribution,outfile+"pathCont.txt");
 		save_to_file(pageContribution,outfile+"pageCont.txt");
 		save_to_file(simi_matrix,outfile+"simiMatrix.txt");
@@ -150,6 +159,7 @@ public class PageRankClustering {
 	{
 		FileWriter fw=new FileWriter(outfile);
 		int n=matrix.length;
+		fw.write(""+n+" "+n+"\n");
 		for(int i=0;i<n;i++)
 		{
 			for(int j=0;j<n;j++)

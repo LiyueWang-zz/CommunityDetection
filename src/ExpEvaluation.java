@@ -62,35 +62,56 @@ public class ExpEvaluation {
 		ArrayList<String> exfile=new ArrayList<String>();
 		ArrayList<Integer> nodes=new ArrayList<Integer>();
 		
-		//youtube-0.05: 3774
-		dsName.add("youtube-0.05");
-		labelfile.add("E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\YOUTUBE\\com-youtube.top5000.cmty.clean0.05.reindex.txt");
-		exfile.add("E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\YOUTUBE\\result\\com-youtube.ungraph0.05.small.reindex_simimatrix_0.85_1.0000000000000004E-8_cs_238_gmmcluster.txt");
-		nodes.add(3774);
+		//dblp-0.04: 2051
+//		dsName.add("dblp-0.04-cm");
+//		labelfile.add("/home/liyuew/Dropbox/CommunityDetection/dblp/com-dblp.top5000.cmty.clean0.04.reindex.txt");
+//		exfile.add("/home/liyuew/CentOS/test/dblp-0.04/");
+//		nodes.add(2051);
 		
-		//youtube-0.1
-		dsName.add("youtube-0.1");
-		labelfile.add("E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\YOUTUBE\\com-youtube.top5000.cmty.clean0.1.reindex.txt");
-		exfile.add("E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\YOUTUBE\\result\\com-youtube.ungraph0.1.small.reindex_simimatrix_0.85_1.0000000000000004E-8_cs_477_gmmcluster.txt");
-		nodes.add(5313);
+		dsName.add("dblp-0.04-sm");
+		labelfile.add("/home/liyuew/Dropbox/CommunityDetection/dblp/com-dblp.top5000.cmty.clean0.04.reindex.txt");
+		exfile.add("/home/liyuew/CentOS/test/dblp-0.04/com-dblp.ungraph0.04.small.reindex_sparseMatrix_simiMatrix_cs_198_gmmcluster.txt");
+		nodes.add(2051);
 		
-		//livej-0.04
-		dsName.add("livej-0.04");
-		labelfile.add("E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\LIVE\\com-lj.top5000.cmty.clean0.04.reindex.txt");
-		exfile.add("E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\LIVE\\result\\com-lj.ungraph0.04.small.reindex_simimatrix_0.85_1.0000000000000004E-8_cs_188_gmmcluster.txt");
-		nodes.add(4084);
+		dsName.add("dblp-0.04-app-0.01");
+		labelfile.add("/home/liyuew/Dropbox/CommunityDetection/dblp/com-dblp.top5000.cmty.clean0.04.reindex.txt");
+		exfile.add("/home/liyuew/CentOS/test/dblp-0.04/com-dblp.ungraph0.04.small.reindex_approx_0.01_simiMatrix_cs_198_gmmcluster.txt");
+		nodes.add(2051);
 		
-		//livej-0.05
-		dsName.add("livej-0.05");
-		labelfile.add("E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\LIVE\\com-lj.top5000.cmty.clean0.05.reindex.txt");
-		exfile.add("E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\LIVE\\result\\com-lj.ungraph0.05.small.reindex_simimatrix_0.85_1.0000000000000004E-8_cs_235_gmmcluster.txt");
-		nodes.add(6341);
+		dsName.add("dblp-0.04-app-0.005");
+		labelfile.add("/home/liyuew/Dropbox/CommunityDetection/dblp/com-dblp.top5000.cmty.clean0.04.reindex.txt");
+		exfile.add("/home/liyuew/CentOS/test/dblp-0.04/com-dblp.ungraph0.04.small.reindex_approx_0.005_simiMatrix_cs_198_gmmcluster.txt");
+		nodes.add(2051);
 		
-		//orkut-0.005: 5315
-		dsName.add("orkut-0.005");
-		labelfile.add("E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\ORKUT\\com-orkut.top5000.cmty.clean0.005.reindex.txt");
-		exfile.add("E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\ORKUT\\result\\com-orkut.ungraph0.005.small.reindex_simimatrix_0.85_1.0000000000000004E-8_cs_24_gmmcluster.txt");
-		nodes.add(5315);
+//		//youtube-0.05: 3774
+//		dsName.add("youtube-0.05");
+//		labelfile.add("E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\YOUTUBE\\com-youtube.top5000.cmty.clean0.05.reindex.txt");
+//		exfile.add("E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\YOUTUBE\\result\\com-youtube.ungraph0.05.small.reindex_simimatrix_0.85_1.0000000000000004E-8_cs_238_gmmcluster.txt");
+//		nodes.add(3774);
+//		
+//		//youtube-0.1
+//		dsName.add("youtube-0.1");
+//		labelfile.add("E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\YOUTUBE\\com-youtube.top5000.cmty.clean0.1.reindex.txt");
+//		exfile.add("E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\YOUTUBE\\result\\com-youtube.ungraph0.1.small.reindex_simimatrix_0.85_1.0000000000000004E-8_cs_477_gmmcluster.txt");
+//		nodes.add(5313);
+//		
+//		//livej-0.04
+//		dsName.add("livej-0.04");
+//		labelfile.add("E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\LIVE\\com-lj.top5000.cmty.clean0.04.reindex.txt");
+//		exfile.add("E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\LIVE\\result\\com-lj.ungraph0.04.small.reindex_simimatrix_0.85_1.0000000000000004E-8_cs_188_gmmcluster.txt");
+//		nodes.add(4084);
+//		
+//		//livej-0.05
+//		dsName.add("livej-0.05");
+//		labelfile.add("E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\LIVE\\com-lj.top5000.cmty.clean0.05.reindex.txt");
+//		exfile.add("E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\LIVE\\result\\com-lj.ungraph0.05.small.reindex_simimatrix_0.85_1.0000000000000004E-8_cs_235_gmmcluster.txt");
+//		nodes.add(6341);
+//		
+//		//orkut-0.005: 5315
+//		dsName.add("orkut-0.005");
+//		labelfile.add("E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\ORKUT\\com-orkut.top5000.cmty.clean0.005.reindex.txt");
+//		exfile.add("E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\ORKUT\\result\\com-orkut.ungraph0.005.small.reindex_simimatrix_0.85_1.0000000000000004E-8_cs_24_gmmcluster.txt");
+//		nodes.add(5315);
 		
 		for(int i=0;i<nodes.size();i++)
 		{
