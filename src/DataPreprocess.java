@@ -6,6 +6,9 @@ public class DataPreprocess {
 	
 	public static void main(String[] args)throws Exception
 	{
+		long begin=System.currentTimeMillis();	
+		long mbegin=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+		
 		//java DataPreprocess -1 //args.length==1
 		if(args.length==0)
 		{
@@ -13,7 +16,6 @@ public class DataPreprocess {
 		}
 		else
 		{
-			long begin=System.currentTimeMillis();
 			String model=args[0];
 			if(model.equals("-1"))
 			{
@@ -36,9 +38,32 @@ public class DataPreprocess {
 				long time_cost=end-begin; //unit: ms
 				System.out.println("Time cost: "+Long.toString(time_cost)+"ms");
 			}
+			else if(model.equals("-3"))
+			{
+				String cmtyfile=args[1];
+				String edgefile=args[2];
+				int subnum=Integer.parseInt(args[3]);
+				//Step-1:clean the community file 
+				removeDup(cmtyfile);
+				//Step-2:extra 500 subnetworks
+				String cleanfile=cmtyfile.substring(0,cmtyfile.length()-4)+".clean.txt";
+				String dir=extraSubnetworks(cleanfile,subnum);
+				//Step-3:reindex the subnetworks and extra the edgefile for each subnetwork
+				extraSubedges(dir,edgefile);
+			}
 			else
 				printHelp();
 		}
+		
+		//test memory
+		long mend=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+		long memory_cost=mend-mbegin;
+		System.out.println("Memory cost: "+memory_cost+" bytes.");
+		
+		//test time
+		long end=System.currentTimeMillis();
+		long time_cost=end-begin; //unit: ms
+		System.out.println("Time cost: "+Long.toString(time_cost)+"ms");
 	}
 	/**
 	 * Usage print
@@ -49,10 +74,11 @@ public class DataPreprocess {
 		System.out.println("where options include:");
 		System.out.println("	-1	cmtyFile //clean the community file");
 		System.out.println("	-2	cmtyFile ungraphFile percent //extra subnetworks according percent");
+		System.out.println("	-3	cmtyFile ungraphFile subnum //extra subnetworks according bigclam paper");
 	}
 	
 	/**
-     * data preprocess
+     * Useless:data preprocess
      */
 	public static void preprocess() throws IOException
 	{
@@ -107,15 +133,28 @@ public class DataPreprocess {
 //		DataPreprocess.checkData("E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\DBLP\\result\\com-dblp.ungraph.small.reindex_simimatrix_0.85_1.0000000000000004E-8.dat");
 
 	}
-	
+	//Useless
+	public static void extraBigclam(String cmtyfile,String edgefile,int subnum) throws IOException
+	{
+		//Step-1:clean the community file 
+		//String cmtyfile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\DBLP\\subnetworks\\com-dblp.all.cmty.txt";
+		removeDup(cmtyfile);
+		//Step-2:extra 500 subnetworks
+		String cleanfile=cmtyfile.substring(0,cmtyfile.length()-4)+".clean.txt";
+		String dir=extraSubnetworks(cleanfile,subnum);
+		//Step-3:reindex the subnetworks and extra the edgefile for each subnetwork
+		//String edgefile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\DBLP\\subnetworks\\com-dblp.ungraph.txt";
+		//String dir="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\DBLP\\subnetworks\\communities";
+		extraSubedges(dir,edgefile);
+	}
 	/**
-	 * For Big Dataset
+	 * For Big Dataset, extract subnetworks according percent
 	 */
 	//extra data from labeled big data sets
 	//extra part communities
 	public static HashMap<Integer,Integer> extraCommunity(String datafile,double percent) throws IOException
 	{
-		HashMap<Integer,Integer> nodes_index=new HashMap<Integer,Integer>();
+		HashMap<Integer,Integer> nodes_index=new HashMap<Integer,Integer>();  // node: old_index,new_index
 		String line="";
 		String output=datafile.substring(0,datafile.length()-4)+percent+".txt";
 		String reoutput=datafile.substring(0,datafile.length()-4)+percent+".reindex.txt";
@@ -278,9 +317,12 @@ public class DataPreprocess {
 		br.close();
 	}
 
+	/**
+	 * For Big Dataset, extract subnetworks according bigclam paper
+	 */
 	//BIGCLAM evaluation:selected 500 subnetworks
-	//TODO:unfinished...
-	public static void extraSubnetworks(String datafile,int sub_num)throws IOException
+	//TODO:check the correctness
+	public static String extraSubnetworks(String datafile,int sub_num)throws IOException
 	{
 		String line="";
 		
@@ -291,7 +333,7 @@ public class DataPreprocess {
 		while((line=br.readLine())!=null)
 		{
 			communities.add(line.trim());
-			String[] parts=line.trim().split("	");
+			String[] parts=line.trim().split("\\t");
 			for(int i=0;i<parts.length;i++)
 			{
 				int node=Integer.parseInt(parts[i].trim());
@@ -357,40 +399,114 @@ public class DataPreprocess {
 		{
 			fws[i].close();
 		}
+		return dir;
 	}
-
+	//For all files: extra edges
 	public static void extraSubedges(String dir,String edgefile)throws IOException
 	{
 		String line="";
-		//read the edge file
-		ArrayList<ArrayList<Integer>> edges=new ArrayList<ArrayList<Integer>>();
-		BufferedReader edgebr=new BufferedReader(new FileReader(edgefile));
-		while((line=edgebr.readLine())!=null)
-		{
-			String[] parts=line.split("	");
-			ArrayList<Integer> pairs=new ArrayList<Integer>();
-			for(int i=0;i<parts.length;i++)
-			{
-				int e=Integer.parseInt(parts[i]);
-				pairs.add(e);
-			}
-		}
-		edgebr.close();
-		
 		File commdir=new File(dir);
 		File[] comms=commdir.listFiles();
-		//new communities dir
-		//old edge files dir
-		//new edge files dir
+		int sub_num=comms.length;
+		//create a dir for new communities
+		String ncdir=edgefile.substring(0,edgefile.lastIndexOf("\\"))+"\\reindex_communities";
+		File ncfile=new File(ncdir);
+		ncfile.mkdir();
+		FileWriter[] ncfws=new FileWriter[sub_num];
+		for(int i=0;i<sub_num;i++)
+		{
+			String output=edgefile.substring(0,edgefile.lastIndexOf("\\"))+"\\reindex_communities\\"+"re_subnetwork"+i+".txt";
+			ncfws[i]=new FileWriter(output);
+		}
+		//create a dir for old edge files
+		String oedir=edgefile.substring(0,edgefile.lastIndexOf("\\"))+"\\edgefiles";
+		File oefile=new File(oedir);
+		oefile.mkdir();
+		FileWriter[] oefws=new FileWriter[sub_num];
+		for(int i=0;i<sub_num;i++)
+		{
+			String output=edgefile.substring(0,edgefile.lastIndexOf("\\"))+"\\edgefiles\\"+"edgefile"+i+".txt";
+			oefws[i]=new FileWriter(output);
+		}
+		//create a dir for new edge files
+		String nedir=edgefile.substring(0,edgefile.lastIndexOf("\\"))+"\\reindex_edgefiles";
+		File nefile=new File(nedir);
+		nefile.mkdir();
+		FileWriter[] nefws=new FileWriter[sub_num];
+		for(int i=0;i<sub_num;i++)
+		{
+			String output=edgefile.substring(0,edgefile.lastIndexOf("\\"))+"\\reindex_edgefiles\\"+"re_edgefile"+i+".txt";
+			nefws[i]=new FileWriter(output);
+		}		
 		
+		//TODO: 
 		for(int i=0;i<comms.length;i++)
 		{
+			
+			HashMap<Integer,Integer> nodes_index=new HashMap<Integer,Integer>();  // node: old_index,new_index
+			int nindex=0;
 			BufferedReader br=new BufferedReader(new FileReader(comms[i]));
 			while((line=br.readLine())!=null)
 			{
-				
+				String[] parts=line.trim().split("\\t");
+				String reline="";
+				for(String part:parts)
+				{
+					int node=Integer.parseInt(part);
+					if(!nodes_index.containsKey(node))
+					{
+						nodes_index.put(node,nindex);
+						reline+=Integer.toString(nindex)+"	";
+						nindex++;
+					}
+					else
+						reline+=nodes_index.get(node).toString()+"	";
+				}
+				ncfws[i].write(reline.trim()+"\n");
+			}
+			extraEdges(edgefile,oefws[i],nefws[i],nodes_index,i);
+			br.close();
+			ncfws[i].close();
+			oefws[i].close();
+			nefws[i].close();
+		}
+
+	}
+	//For each file: extra the edges according the nodes from extra community's
+	public static String extraEdges(String edgefile,FileWriter fw,FileWriter refw, HashMap<Integer,Integer> nodes_index,int findex) throws IOException
+	{
+//		String output=edgefile.substring(0,edgefile.length()-4)+findex+".txt";
+//		String reoutput=edgefile.substring(0,edgefile.length()-4)+findex+".reindex.txt";
+//		FileWriter fw=new FileWriter(output);
+//		FileWriter refw=new FileWriter(reoutput);
+		fw.write("Nodes: "+nodes_index.size()+"\n");
+		refw.write("Nodes: "+nodes_index.size()+"\n");
+		BufferedReader br=new BufferedReader(new FileReader(edgefile));
+		String line="";
+		int cnt=0;
+		while((line=br.readLine())!=null)
+		{
+			if(line.contains("#"))
+				continue;
+			String[] parts=line.split("	");
+			if(parts.length!=2)
+				System.err.println("line format err!!");
+			int from=Integer.parseInt(parts[0]);
+			int to=Integer.parseInt(parts[1]);
+			if(nodes_index.containsKey(from)&&nodes_index.containsKey(to))
+			{
+				fw.write(line+"\n");
+				refw.write(""+nodes_index.get(from)+"	"+nodes_index.get(to)+"\n");
+				refw.write(""+nodes_index.get(to)+"	"+nodes_index.get(from)+"\n");
+				cnt++;
 			}
 		}
+		br.close();
+		fw.close();
+		refw.close();
+		System.out.println("extra #edges="+cnt);
+		
+		return "";
 	}
 
 	/**
