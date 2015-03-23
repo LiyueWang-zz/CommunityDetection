@@ -27,50 +27,77 @@ public class PageContV2 {
 		long begin=System.currentTimeMillis();	
 		long mbegin=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
 		
-//		String datafile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\testbenchmark\\com-amazon.ungraph0.05.small.reindex.txt";	
-//		String outfile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\testbenchmark\\com-amazon.ungraph0.05.small.reindex_sparseMatrix_";				
-//		boolean weighted=false;	
-		
-//		/*
-		if(args.length!=2)
-		{
-			System.out.println("Usage: PageContV2 infile weighted ");
-			return;
-		}
-		
-		String datafile=args[0];
+		String datafile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\testcase\\memory\\com-dblp.ungraph0.04.small.reindex.txt";	
 		String outfile=datafile.substring(0,datafile.length()-4)+"_sparseMatrix_";
-		boolean weighted=false;
-		if(args[1]=="true")
-			weighted=true;
-//		*/
+		boolean weighted=false;	
+		
+
+//		if(args.length!=2)
+//		{
+//			System.out.println("Usage: PageContV2 infile weighted ");
+//			return;
+//		}
+//		
+//		String datafile=args[0];
+//		String outfile=datafile.substring(0,datafile.length()-4)+"_sparseMatrix_";
+//		boolean weighted=false;
+//		if(args[1]=="true")
+//			weighted=true;
+
 		
 		/**
 		 * Complete Version
 		 */
-//		SparseMatrix adj_matrix=init_adj_matrix(datafile,weighted);		
-//		SparseMatrix tran_matrix=init_tran_matrix(adj_matrix);
-//		SparseMatrix pathContribution=compute_pathcont_thresh(tran_matrix);	
-//		
-//		long end1=System.currentTimeMillis();
-//		long time_cost1=end1-begin; //unit: ms
-//		System.out.println("Time cost-1: "+Long.toString(time_cost1)+"ms");
-//		
-//		double[] pageRank=compute_pageRank_thresh(tran_matrix);		
-//		SparseMatrix pageContribution=compute_pagecont(pageRank,pathContribution);
-//		SparseMatrix simi_matrix=compute_similarity(pageContribution);
-//			
-//		adj_matrix.save_to_file(outfile+"adjMatrix.txt");
-//		tran_matrix.save_to_file(outfile+"tranMatrix.txt");
-//		save_pr(pageRank,outfile+"pageRank.txt");
-//		pathContribution.save_to_file(outfile+"pathCont.txt");
-//		pageContribution.save_to_file(outfile+"pageCont.txt");
-//		simi_matrix.save_to_file(outfile+"simiMatrix.txt");
+		
+		/*
+		SparseMatrix adj_matrix=init_adj_matrix(datafile,weighted);	
+		long mend1=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+		long memory_cost1=mend1-mbegin;
+		System.out.println("Memory cost-1: "+memory_cost1+" bytes.");
+		
+		SparseMatrix tran_matrix=init_tran_matrix(adj_matrix);
+		adj_matrix=null;
+		SparseMatrix pathContribution=compute_pathcont_thresh(tran_matrix);	
+		
+		long mend2=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+		long memory_cost2=mend2-mbegin;
+		System.out.println("Memory cost-2: "+memory_cost2+" bytes.");
+		
+		long end1=System.currentTimeMillis();
+		long time_cost1=end1-begin; //unit: ms
+		System.out.println("Time cost-1: "+Long.toString(time_cost1)+"ms");
+		
+		double[] pageRank=compute_pageRank_thresh(tran_matrix);
+		tran_matrix=null;
+		SparseMatrix pageContribution=compute_pagecont(pageRank,pathContribution);
+		pageRank=null;
+		SparseMatrix simi_matrix=compute_similarity(pageContribution);
+		pageContribution=null;	
+		
+		adj_matrix.save_to_file(outfile+"adjMatrix.txt");
+		tran_matrix.save_to_file(outfile+"tranMatrix.txt");
+		save_pr(pageRank,outfile+"pageRank.txt");
+		pathContribution.save_to_file(outfile+"pathCont.txt");
+		pageContribution.save_to_file(outfile+"pageCont.txt");
+		simi_matrix.save_to_file(outfile+"simiMatrix.txt");
+		*/
+		
 		/**
 		 * Approxmation Version
 		 */
+		///*
 		SparseMatrix adj_matrix=init_adj_matrix(datafile,weighted);
-		double[][] pathContributionV1=approx_pathcont_matrix(adj_matrix,1-DAMPLE_FACTOR,0.01,1.0);
+		
+		long mend1=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+		long memory_cost1=mend1-mbegin;
+		System.out.println("Memory cost-1(adj_matrix): "+memory_cost1+" bytes.");
+		
+//		double[][] pathContributionV1=approx_pathcont_matrix(adj_matrix,1-DAMPLE_FACTOR,0.01,1.0);
+		SparseMatrix pathContribution=approx_pathcont(adj_matrix,1-DAMPLE_FACTOR,0.01,1.0);
+
+		long mend2=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+		long memory_cost2=mend2-mbegin;
+		System.out.println("Memory cost-2(pathCont): "+memory_cost2+" bytes.");
 		
 		long end2=System.currentTimeMillis();
 		long time_cost2=end2-begin; //unit: ms
@@ -78,17 +105,19 @@ public class PageContV2 {
 		
 		SparseMatrix tran_matrix=init_tran_matrix(adj_matrix);
 		double[] pageRank=compute_pageRank_thresh(tran_matrix);
-		SparseMatrix pathContribution=SparseMatrix.create_from_2d_array(pathContributionV1);
+		adj_matrix=null;
+		tran_matrix=null;
+//		SparseMatrix pathContribution=SparseMatrix.create_from_2d_array(pathContributionV1);
 		SparseMatrix pageContribution=compute_pagecont(pageRank,pathContribution);
 		SparseMatrix simi_matrix=compute_similarity(pageContribution);
+		pageContribution=null;
 		
 		String outfile_app=datafile.substring(0,datafile.length()-4)+"_approx_0.01_";
-		pathContribution.save_to_file(outfile_app+"pathCont.txt");
-		pageContribution.save_to_file(outfile_app+"pageCont.txt");
-		
-//		PageRankClustering.save_to_file(pathContribution,outfile+"Approx_pathCont.txt");
-//		SparseMatrix pathContribution=approx_pathcont(adj_matrix,1-DAMPLE_FACTOR,0.01,1.0);	
-//		pathContribution.save_to_file(outfile+"Approx_SM_pathCont.txt");
+//		pathContribution.save_to_file(outfile_app+"pathCont.txt");
+//		pageContribution.save_to_file(outfile_app+"pageCont.txt");
+		simi_matrix.save_to_file(outfile_app+"simiMatrix.txt");
+		simi_matrix=null;
+		//*/
 					
 		/**
 		 * Temporary test
@@ -546,13 +575,12 @@ public class PageContV2 {
 		return p;
 	}
 	
-	//Useless: much slower than approx_pathcont_matrix
+	// slower than approx_pathcont_matrix, but save space
 	public static SparseMatrix approx_pathcont(SparseMatrix adj_matirx, double alpha,double theta, double pmax)
 	{
 		SparseMatrix p=SparseMatrix.create_zero_matrix(adj_matirx.n_rows,adj_matirx.n_cols);
 		SparseMatrix r=SparseMatrix.create_identity_matrix(adj_matirx.n_rows,adj_matirx.n_cols);
 		LinkedList<Integer>[] queue=new LinkedList[adj_matirx.n_rows];
-		//Arrays.fill(queue,new LinkedList<Integer>());
 		for(int i=0;i<adj_matirx.n_rows;i++)
 		{
 			queue[i]=new LinkedList<Integer>(); 
@@ -574,7 +602,7 @@ public class PageContV2 {
 				else
 					p.setEntry(i, u_index, p.getRowEntry(i, u_index).value+alpha*r_iu);
 				r.setEntry(i, u_index, 0.0);
-				//TODO: for each w such that w->u
+				//for each w such that w->u
 				LinkedList<SparseMatrixEntry> ws=adj_matirx.rows[u_index];
 				for(SparseMatrixEntry entry:ws)
 				{
@@ -592,8 +620,8 @@ public class PageContV2 {
 //				}
 			}
 		}
-		for(int i=0;i<push_num.length;i++)
-			System.out.println("For node "+i+", the push#="+push_num[i]);
+//		for(int i=0;i<push_num.length;i++)
+//			System.out.println("For node "+i+", the push#="+push_num[i]);
 		p.keep_sort();
 		return p;
 		
