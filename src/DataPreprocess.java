@@ -56,13 +56,20 @@ public class DataPreprocess {
 		}
 		*/
 		
+		/**
+		 * temporary used 
+		 */
+		
 //		preprocess();
+		
+		extraBigclam();
 		
 //		String efile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\DBLP\\com-dblp.ungraph.txt";
 //		cleanEdges(efile);
 		
-		String datafile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\DBLP\\dblp-0.1-app-0.01-sc0.txt";		
-		transfer(datafile);
+//		String datafile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\DBLP\\dblp-0.1-app-0.01-sc0.txt";		
+//		transfer(datafile);
+		
 		//test memory
 		long mend=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
 		long memory_cost=mend-mbegin;
@@ -143,17 +150,18 @@ public class DataPreprocess {
 
 	}
 	//Useless
-	public static void extraBigclam(String cmtyfile,String edgefile,int subnum) throws IOException
+	public static void extraBigclam() throws IOException
 	{
 		//Step-1:clean the community file 
-		//String cmtyfile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\DBLP\\subnetworks\\com-dblp.all.cmty.txt";
-		removeDup(cmtyfile);
+		String cmtyfile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\DBLP\\subnetworks\\com-dblp.all.cmty.txt";
+//		removeDup(cmtyfile);
 		//Step-2:extra 500 subnetworks
 		String cleanfile=cmtyfile.substring(0,cmtyfile.length()-4)+".clean.txt";
+		int subnum=20;
 		String dir=extraSubnetworks(cleanfile,subnum);
 		//Step-3:reindex the subnetworks and extra the edgefile for each subnetwork
-		//String edgefile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\DBLP\\subnetworks\\com-dblp.ungraph.txt";
-		//String dir="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\DBLP\\subnetworks\\communities";
+		String edgefile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\DBLP\\subnetworks\\com-dblp.ungraph.txt";
+//		String dir="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\DBLP\\subnetworks\\communities";
 		extraSubedges(dir,edgefile);
 	}
 	//Useless
@@ -428,7 +436,7 @@ public class DataPreprocess {
 		FileWriter[] fws=new FileWriter[sub_num];
 		for(int i=0;i<sub_num;i++)
 		{
-			String output=datafile.substring(0,datafile.lastIndexOf("\\"))+"\\communities\\"+"subnetwork"+i+".txt";
+			String output=datafile.substring(0,datafile.lastIndexOf("\\"))+"\\communities\\"+"subnetwork."+i+".txt";
 			fws[i]=new FileWriter(output);
 		}
 		
@@ -462,7 +470,7 @@ public class DataPreprocess {
 		FileWriter[] ncfws=new FileWriter[sub_num];
 		for(int i=0;i<sub_num;i++)
 		{
-			String output=edgefile.substring(0,edgefile.lastIndexOf("\\"))+"\\reindex_communities\\"+"re_subnetwork"+i+".txt";
+			String output=edgefile.substring(0,edgefile.lastIndexOf("\\"))+"\\reindex_communities\\"+"re_subnetwork."+i+".txt";
 			ncfws[i]=new FileWriter(output);
 		}
 		//create a dir for old edge files
@@ -472,7 +480,7 @@ public class DataPreprocess {
 		FileWriter[] oefws=new FileWriter[sub_num];
 		for(int i=0;i<sub_num;i++)
 		{
-			String output=edgefile.substring(0,edgefile.lastIndexOf("\\"))+"\\edgefiles\\"+"edgefile"+i+".txt";
+			String output=edgefile.substring(0,edgefile.lastIndexOf("\\"))+"\\edgefiles\\"+"edgefile."+i+".txt";
 			oefws[i]=new FileWriter(output);
 		}
 		//create a dir for new edge files
@@ -482,14 +490,15 @@ public class DataPreprocess {
 		FileWriter[] nefws=new FileWriter[sub_num];
 		for(int i=0;i<sub_num;i++)
 		{
-			String output=edgefile.substring(0,edgefile.lastIndexOf("\\"))+"\\reindex_edgefiles\\"+"re_edgefile"+i+".txt";
+			String output=edgefile.substring(0,edgefile.lastIndexOf("\\"))+"\\reindex_edgefiles\\"+"re_edgefile."+i+".txt";
 			nefws[i]=new FileWriter(output);
 		}		
 		
 		//TODO: 
 		for(int i=0;i<comms.length;i++)
 		{
-			
+			String[] ps=comms[i].getName().split("\\.");
+			int file_index=Integer.parseInt(ps[ps.length-2]);
 			HashMap<Integer,Integer> nodes_index=new HashMap<Integer,Integer>();  // node: old_index,new_index
 			int nindex=0;
 			BufferedReader br=new BufferedReader(new FileReader(comms[i]));
@@ -509,18 +518,18 @@ public class DataPreprocess {
 					else
 						reline+=nodes_index.get(node).toString()+"	";
 				}
-				ncfws[i].write(reline.trim()+"\n");
+				ncfws[file_index].write(reline.trim()+"\n");
 			}
-			extraEdges(edgefile,oefws[i],nefws[i],nodes_index,i);
+			extraEdges(edgefile,oefws[file_index],nefws[file_index],nodes_index);
 			br.close();
-			ncfws[i].close();
-			oefws[i].close();
-			nefws[i].close();
+			ncfws[file_index].close();
+			oefws[file_index].close();
+			nefws[file_index].close();
 		}
 
 	}
 	//For each file: extra the edges according the nodes from extra community's
-	public static String extraEdges(String edgefile,FileWriter fw,FileWriter refw, HashMap<Integer,Integer> nodes_index,int findex) throws IOException
+	public static String extraEdges(String edgefile,FileWriter fw,FileWriter refw, HashMap<Integer,Integer> nodes_index) throws IOException
 	{
 //		String output=edgefile.substring(0,edgefile.length()-4)+findex+".txt";
 //		String reoutput=edgefile.substring(0,edgefile.length()-4)+findex+".reindex.txt";

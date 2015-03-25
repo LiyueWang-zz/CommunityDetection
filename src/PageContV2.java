@@ -27,7 +27,8 @@ public class PageContV2 {
 		long begin=System.currentTimeMillis();	
 		long mbegin=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
 		
-//		String datafile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\testcase\\memory\\com-dblp.ungraph0.04.small.reindex.txt";	
+//		String datafile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\DBLP\\re_edgefile.8.txt";	
+//		//String datafile="E:\MyDropbox\Dropbox\Study\SFU\SFU-CourseStudy\2014Fall-726-A3\ASN\project\DBLP\subnetworks\reindex_edgefiles";
 //		String outfile=datafile.substring(0,datafile.length()-4)+"_sparseMatrix_";
 //		boolean weighted=false;	
 		
