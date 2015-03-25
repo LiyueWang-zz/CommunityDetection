@@ -8,7 +8,7 @@ public class DataPreprocess {
 	{
 		long begin=System.currentTimeMillis();	
 		long mbegin=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
-		
+		/*
 		//java DataPreprocess -1 //args.length==1
 		if(args.length==0)
 		{
@@ -54,7 +54,12 @@ public class DataPreprocess {
 			else
 				printHelp();
 		}
+		*/
 		
+		preprocess();
+		
+//		String efile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\DBLP\\com-dblp.ungraph.txt";
+//		cleanEdges(efile);
 		//test memory
 		long mend=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
 		long memory_cost=mend-mbegin;
@@ -87,11 +92,12 @@ public class DataPreprocess {
 		 * Original data files 
 		 */
 		//dblp
-//		String dfile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\DBLP\\com-dblp.top5000.cmty.clean.txt";
-//		String efile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\DBLP\\com-dblp.ungraph.txt";
+		String dfile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\DBLP\\com-dblp.top5000.cmty.clean.txt";
+		String efile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\DBLP\\com-dblp.ungraph.txt";
+
 		//amazon
-		String dfile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\AMAZON\\com-amazon.top5000.cmty.clean.txt";
-		String efile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\AMAZON\\com-amazon.ungraph.txt";
+//		String dfile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\AMAZON\\com-amazon.top5000.cmty.clean.txt";
+//		String efile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\AMAZON\\com-amazon.ungraph.txt";
 		//youtube
 //		String dfile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\YOUTUBE\\com-youtube.top5000.cmty.clean.txt";
 //		String efile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\YOUTUBE\\com-youtube.ungraph.txt";
@@ -107,8 +113,8 @@ public class DataPreprocess {
 		 * 	input: com-amazon.top5000.cmty.txt
 		 *  output:com-amazon.top5000.cmty.clean.txt
 		 */
-		String refile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\AMAZON\\subnetworks\\com-amazon.all.cmty.txt";
-		removeDup(refile);
+//		String refile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\AMAZON\\subnetworks\\com-amazon.all.cmty.txt";
+//		removeDup(refile);
 		
 		/**
 		 * Step-2: extra subnetworks according percent
@@ -119,8 +125,8 @@ public class DataPreprocess {
 		 * 	output2.1: com-amazon.ungraph0.05.small.txt
 		 * 	output2.2: com-amazon.ungraph0.05.small.reindex.txt
 		 */
-		HashMap<Integer,Integer> nodes_index=DataPreprocess.extraCommunity(dfile,0.006);
-		DataPreprocess.extraEdges(efile,nodes_index,0.006);
+		HashMap<Integer,Integer> nodes_index=DataPreprocess.extraCommunity(dfile,1.0);
+		DataPreprocess.extraEdges(efile,nodes_index,1.0);
 		
 
 		/**
@@ -147,6 +153,41 @@ public class DataPreprocess {
 		//String dir="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\DBLP\\subnetworks\\communities";
 		extraSubedges(dir,edgefile);
 	}
+	//Useless
+	public static void cleanEdges(String datafile)throws IOException
+	{
+		String output=datafile.substring(0,datafile.length()-4)+".double.txt";
+		FileWriter fw=new FileWriter(output);
+		
+		BufferedReader br=new BufferedReader(new FileReader(datafile));
+		String line=br.readLine();
+		line=br.readLine();
+		line=br.readLine();
+		String[] ss=line.split(" ");
+		int node_num=Integer.parseInt(ss[2]);
+		fw.write("Nodes: "+node_num+"\n");
+		int cnt=0;
+		while((line=br.readLine())!=null)
+		{
+			if(line.contains("#"))
+				continue;
+			String[] parts=line.split("	");
+			if(parts.length!=2)
+				System.err.println("line format err!!");
+			int from=Integer.parseInt(parts[0]);
+			int to=Integer.parseInt(parts[1]);
+			if(from>=node_num||to>=node_num)
+			{
+				System.out.println(line);
+				continue;
+			}
+			fw.write(""+from+"	"+to+"\n");
+			fw.write(""+to+"	"+from+"\n");
+		}
+		br.close();
+		fw.close();
+	}
+	
 	/**
 	 * For Big Dataset, extract subnetworks according percent
 	 */
@@ -234,6 +275,9 @@ public class DataPreprocess {
 	{
 		String output=edgefile.substring(0,edgefile.length()-4)+percent+".small.txt";
 		String reoutput=edgefile.substring(0,edgefile.length()-4)+percent+".small.reindex.txt";
+//		String output=edgefile.substring(0,edgefile.length()-4)+percent+".full.txt";
+//		String reoutput=edgefile.substring(0,edgefile.length()-4)+percent+".full.reindex.txt";
+		
 		FileWriter fw=new FileWriter(output);
 		FileWriter refw=new FileWriter(reoutput);
 		fw.write("Nodes: "+nodes_index.size()+"\n");

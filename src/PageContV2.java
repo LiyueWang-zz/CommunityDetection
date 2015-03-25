@@ -27,22 +27,22 @@ public class PageContV2 {
 		long begin=System.currentTimeMillis();	
 		long mbegin=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
 		
-		String datafile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\testcase\\memory\\com-dblp.ungraph0.04.small.reindex.txt";	
-		String outfile=datafile.substring(0,datafile.length()-4)+"_sparseMatrix_";
-		boolean weighted=false;	
+//		String datafile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\testcase\\memory\\com-dblp.ungraph0.04.small.reindex.txt";	
+//		String outfile=datafile.substring(0,datafile.length()-4)+"_sparseMatrix_";
+//		boolean weighted=false;	
 		
 
-//		if(args.length!=2)
-//		{
-//			System.out.println("Usage: PageContV2 infile weighted ");
-//			return;
-//		}
-//		
-//		String datafile=args[0];
-//		String outfile=datafile.substring(0,datafile.length()-4)+"_sparseMatrix_";
-//		boolean weighted=false;
-//		if(args[1]=="true")
-//			weighted=true;
+		if(args.length!=2)
+		{
+			System.out.println("Usage: PageContV2 infile weighted ");
+			return;
+		}
+		
+		String datafile=args[0];
+		String outfile=datafile.substring(0,datafile.length()-4)+"_sparseMatrix_";
+		boolean weighted=false;
+		if(args[1]=="true")
+			weighted=true;
 
 		
 		/**
@@ -658,4 +658,5 @@ public class PageContV2 {
 		
 		fw.close();
 	}
+
 }

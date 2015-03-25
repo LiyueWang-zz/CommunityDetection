@@ -351,6 +351,31 @@ public class SparseMatrix
 		fw.close();
 		System.out.println("Save the SparseMatrix to "+path+" Successfully!");
 	}
+	//Used for matlab input:save a complete double[][] of sparsematrix to file
+	public void save_all_to_file(String path) throws Exception
+	{
+		FileWriter fw=new FileWriter(path);
+		//write rows: "value\tvalue\tvalue..."
+		for(int i=0;i<this.n_rows;i++)
+		{
+			int j=0;
+			for(Iterator it=this.rows[i].iterator();it.hasNext();)
+			{
+				SparseMatrixEntry entry=(SparseMatrixEntry)it.next();
+				BigDecimal b=new   BigDecimal(entry.value);
+				double value=b.setScale(10, BigDecimal.ROUND_HALF_UP).doubleValue(); 
+				for(;j<entry.index;j++)
+					fw.write("0.0	");
+				fw.write(value+"	");
+				j++;
+			}
+			for(;j<this.n_rows;j++)
+				fw.write("0.0	");
+			fw.write("\n");
+		}
+		fw.close();
+		System.out.println("Save the CompleteMatrix of SparseMatrix to "+path+" Successfully!");
+	}
 /////////////////////////// Useless  //////////////////////////////////////////////////////////	
 	public void check_consistency() throws Exception
 	{
