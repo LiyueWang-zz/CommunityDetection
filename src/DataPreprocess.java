@@ -8,7 +8,7 @@ public class DataPreprocess {
 	{
 		long begin=System.currentTimeMillis();	
 		long mbegin=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
-		/*
+		
 		//java DataPreprocess -1 //args.length==1
 		if(args.length==0)
 		{
@@ -21,10 +21,6 @@ public class DataPreprocess {
 			{
 				String infile=args[1];
 				removeDup(infile);
-				
-				long end=System.currentTimeMillis();
-				long time_cost=end-begin; //unit: ms
-				System.out.println("Time cost: "+Long.toString(time_cost)+"ms");
 			}
 			else if(model.equals("-2"))
 			{
@@ -33,10 +29,6 @@ public class DataPreprocess {
 				double percent=Double.parseDouble(args[3]);
 				HashMap<Integer,Integer> nodes_index=DataPreprocess.extraCommunity(dfile,percent);
 				DataPreprocess.extraEdges(efile,nodes_index,percent);
-				
-				long end=System.currentTimeMillis();
-				long time_cost=end-begin; //unit: ms
-				System.out.println("Time cost: "+Long.toString(time_cost)+"ms");
 			}
 			else if(model.equals("-3"))
 			{
@@ -54,7 +46,7 @@ public class DataPreprocess {
 			else
 				printHelp();
 		}
-		*/
+		
 		
 		/**
 		 * temporary used 
@@ -62,7 +54,7 @@ public class DataPreprocess {
 		
 //		preprocess();
 		
-		extraBigclam();
+//		extraBigclam();
 		
 //		String efile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\DBLP\\com-dblp.ungraph.txt";
 //		cleanEdges(efile);
@@ -583,7 +575,7 @@ public class DataPreprocess {
 	//transfer matlab clustering result file to same format for java
 	public static void transfer(String datafile)throws IOException
 	{
-		String output=datafile.substring(0,datafile.length()-4)+"Cluster.txt";
+		String output=datafile.substring(0,datafile.length()-4)+".mat.specluster.txt";
 		HashMap<Double,ArrayList<Integer>> label_nodes=new HashMap<Double,ArrayList<Integer>>();
 		BufferedReader br=new BufferedReader(new FileReader(datafile));
 		String line="";

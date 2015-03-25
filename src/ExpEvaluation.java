@@ -8,6 +8,48 @@ public class ExpEvaluation {
 	public static void main(String[] args) throws Exception
 	{
 		long begin=System.currentTimeMillis();	
+		if(args.length==0)
+		{
+			printHelp();
+		}
+		else
+		{
+			String model=args[0];
+			if(model.equals("-1"))
+			{
+				String labelfile=args[1];   //the ground-truth community file
+				String expfile=args[2];     //the experiment result of clustering file
+				String dsName="";
+				
+				averageF1(labelfile, expfile,dsName);
+				omegaIndex(labelfile, expfile,dsName);
+				NMI(labelfile, expfile,dsName);
+				
+			}
+			else if(model.equals("-2"))
+			{
+				String labeldir=args[1];
+				String expdir=args[2];
+				
+				File commdir=new File(labeldir);
+				File[] comms=commdir.listFiles();
+				for(int i=0;i<comms.length;i++)
+				{
+					String labelfile=comms[i].getPath(); //TODO:check
+					String file_index=comms[i].getName().split("\\.")[1];
+					String expfile=expdir+"/"+"re_edgefile."+file_index+"_approx_0.01-simiMatrix_cs_2_gmmcluster.txt"; //TODO: 
+//					String expfile=expdir+"/"+"re_edgefile."+file_index+"_approx_0.01-simiMatrix_cs_2_specluster.txt"; 			
+					String dsName="File"+file_index;
+					
+					averageF1(labelfile, expfile,dsName);
+					omegaIndex(labelfile, expfile,dsName);
+					NMI(labelfile, expfile,dsName);
+				}
+				
+			}
+			else 
+				printHelp();
+		}
 		
 		evaluation();
 		
@@ -18,7 +60,18 @@ public class ExpEvaluation {
 	}
 	
 	/**
-	 * Evaluation for big data sets
+	 * Usage print
+	 */
+	static void printHelp()
+	{
+		System.out.println("Usage: ExpEvaluation [-option]");
+		System.out.println("where options include:");
+		System.out.println("	-1	labelfile expfile //evaluate single file");
+		System.out.println("	-2	labeldir expdir //evaluate multiple files in a directory");
+	}
+	
+	/**
+	 * Useless: Evaluation for big data sets
 	 */
 	public static void evaluation() throws IOException
 	{
@@ -133,8 +186,8 @@ public class ExpEvaluation {
 		for(int i=0;i<nodes.size();i++)
 		{
 			averageF1(labelfile.get(i), exfile.get(i), dsName.get(i));
-			omegaIndex(labelfile.get(i), exfile.get(i), nodes.get(i),dsName.get(i));
-			NMI(labelfile.get(i), exfile.get(i), nodes.get(i),dsName.get(i));
+			omegaIndex(labelfile.get(i), exfile.get(i),dsName.get(i));
+			NMI(labelfile.get(i), exfile.get(i),dsName.get(i));
 		}
 		
 	}
@@ -243,7 +296,7 @@ public class ExpEvaluation {
 	}
 
 	//Omega Index
-	public static double omegaIndex(String labelfile, String exfile, int v,String dsName)throws IOException
+	public static double omegaIndex(String labelfile, String exfile, String dsName)throws IOException
 	{
 		double omega=0.0;
 		ArrayList<ArrayList<Integer>> labelcomms=new ArrayList<ArrayList<Integer>>();
@@ -266,6 +319,8 @@ public class ExpEvaluation {
 		}
 		labr.close();
 		//read community labels from experiment result datafile
+		line=exbr.readLine(); //read the first line"Nodes: xx" to get the #of nodes
+		int v=Integer.parseInt(line.trim().split("\\s")[1]);
 		while((line=exbr.readLine())!=null)
 		{
 			ArrayList<Integer> com=new ArrayList<Integer>();
@@ -303,7 +358,7 @@ public class ExpEvaluation {
 	}
 	
 	//normalized mutual information
-	public static double NMI(String labelfile, String exfile,int v,String dsName)throws IOException
+	public static double NMI(String labelfile, String exfile,String dsName)throws IOException
 	{
 		double nmi=0.0;
 		ArrayList<ArrayList<Integer>> labelcomms=new ArrayList<ArrayList<Integer>>();
@@ -312,6 +367,8 @@ public class ExpEvaluation {
 		BufferedReader labr=new BufferedReader(new FileReader(labelfile));
 		BufferedReader exbr=new BufferedReader(new FileReader(exfile));
 		String line="";
+		line=exbr.readLine(); //read the first line"Nodes: xx" to get the #of nodes
+		int v=Integer.parseInt(line.trim().split("\\s")[1]);
 		//read community labels from label datafile
 		double hx=0.0;
 		double px=0.0;
@@ -335,6 +392,7 @@ public class ExpEvaluation {
 		//read community labels from experiment result datafile
 		double hy=0.0;
 		double py=0.0;
+		
 		while((line=exbr.readLine())!=null)
 		{
 			ArrayList<Integer> com=new ArrayList<Integer>();
