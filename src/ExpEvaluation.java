@@ -62,6 +62,12 @@ public class ExpEvaluation {
 		ArrayList<String> exfile=new ArrayList<String>();
 		ArrayList<Integer> nodes=new ArrayList<Integer>();
 		
+		dsName.add("dblp-0.1-app-0.1");
+		labelfile.add("E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\DBLP\\com-dblp.top5000.cmty.clean0.1.reindex.txt");
+		exfile.add("E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\DBLP\\dblp-0.1-app-0.01-sc0Cluster.txt");
+		nodes.add(2051);
+		
+	/*	
 		//dblp-0.04: 2051
 		dsName.add("dblp-0.04-cm");
 		labelfile.add("/home/liyuew/Dropbox/CommunityDetection/dblp/com-dblp.top5000.cmty.clean0.04.reindex.txt");
@@ -92,6 +98,7 @@ public class ExpEvaluation {
 		labelfile.add("/home/liyuew/Dropbox/CommunityDetection/dblp/com-dblp.top5000.cmty.clean0.04.reindex.txt");
 		exfile.add("/home/liyuew/CentOS/test/dblp-0.04/com-dblp.ungraph0.04.small.reindex_approx_0.0001_simiMatrix_cs_198_gmmcluster.txt");
 		nodes.add(2051);
+	*/
 		
 //		//youtube-0.05: 3774
 //		dsName.add("youtube-0.05");

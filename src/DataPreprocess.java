@@ -56,10 +56,13 @@ public class DataPreprocess {
 		}
 		*/
 		
-		preprocess();
+//		preprocess();
 		
 //		String efile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\DBLP\\com-dblp.ungraph.txt";
 //		cleanEdges(efile);
+		
+		String datafile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\DBLP\\dblp-0.1-app-0.01-sc0.txt";		
+		transfer(datafile);
 		//test memory
 		long mend=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
 		long memory_cost=mend-mbegin;
@@ -564,5 +567,47 @@ public class DataPreprocess {
 	 */
 	
 	
+	
+	/**
+	 * For other data process usage
+	 */
+	//transfer matlab clustering result file to same format for java
+	public static void transfer(String datafile)throws IOException
+	{
+		String output=datafile.substring(0,datafile.length()-4)+"Cluster.txt";
+		HashMap<Double,ArrayList<Integer>> label_nodes=new HashMap<Double,ArrayList<Integer>>();
+		BufferedReader br=new BufferedReader(new FileReader(datafile));
+		String line="";
+		int node_index=0;
+		while((line=br.readLine())!=null)
+		{
+			double label=Double.parseDouble(line.trim());
+			if(label_nodes.containsKey(label))
+			{
+				label_nodes.get(label).add(node_index);
+			}
+			else
+			{
+				ArrayList<Integer> nodes=new ArrayList<Integer>();
+				nodes.add(node_index);
+				label_nodes.put(label, nodes);
+			}
+			node_index++;
+		}
+		FileWriter fw=new FileWriter(output);
+		Iterator it=label_nodes.entrySet().iterator();
+		while(it.hasNext())
+		{
+			Map.Entry entry=(Map.Entry)it.next();
+			ArrayList<Integer> nodes=(ArrayList<Integer>)entry.getValue();
+			for(int node:nodes)
+			{
+				fw.write(node+"	");//\t
+			}
+			fw.write("\n");
+		}
+		br.close();
+		fw.close();
+	}
 	
 }
