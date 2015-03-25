@@ -116,6 +116,7 @@ public class PageContV2 {
 //		pathContribution.save_to_file(outfile_app+"pathCont.txt");
 //		pageContribution.save_to_file(outfile_app+"pageCont.txt");
 		simi_matrix.save_to_file(outfile_app+"simiMatrix.txt");
+		simi_matrix.save_all_to_file(outfile_app+"simiMatrixFull.txt");
 		simi_matrix=null;
 		//*/
 					
