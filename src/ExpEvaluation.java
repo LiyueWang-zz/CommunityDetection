@@ -51,7 +51,7 @@ public class ExpEvaluation {
 				printHelp();
 		}
 		
-		evaluation();
+//		evaluation();
 		
 		//test time
 		long end=System.currentTimeMillis();
@@ -205,7 +205,7 @@ public class ExpEvaluation {
 		
 		BufferedReader labr=new BufferedReader(new FileReader(labelfile));
 		BufferedReader exbr=new BufferedReader(new FileReader(exfile));
-		String line="";
+		String line=exbr.readLine();
 		//read community labels from label datafile
 		while((line=labr.readLine())!=null)
 		{

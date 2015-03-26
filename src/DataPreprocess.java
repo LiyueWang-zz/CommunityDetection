@@ -368,7 +368,7 @@ public class DataPreprocess {
 	 * For Big Dataset, extract subnetworks according bigclam paper
 	 */
 	//BIGCLAM evaluation:selected 500 subnetworks
-	//TODO:check the correctness
+	//TODO:change windows path to linux path
 	public static String extraSubnetworks(String datafile,int sub_num)throws IOException
 	{
 		String line="";
@@ -422,13 +422,13 @@ public class DataPreprocess {
 		}
 		//write the selected 500 communities
 		//create a dir
-		String dir=datafile.substring(0,datafile.lastIndexOf("\\"))+"\\communities";
+		String dir=datafile.substring(0,datafile.lastIndexOf("/"))+"/communities";
 		File file=new File(dir);
 		file.mkdir();
 		FileWriter[] fws=new FileWriter[sub_num];
 		for(int i=0;i<sub_num;i++)
 		{
-			String output=datafile.substring(0,datafile.lastIndexOf("\\"))+"\\communities\\"+"subnetwork."+i+".txt";
+			String output=datafile.substring(0,datafile.lastIndexOf("/"))+"/communities/"+"subnetwork."+i+".txt";
 			fws[i]=new FileWriter(output);
 		}
 		
@@ -456,43 +456,45 @@ public class DataPreprocess {
 		File[] comms=commdir.listFiles();
 		int sub_num=comms.length;
 		//create a dir for new communities
-		String ncdir=edgefile.substring(0,edgefile.lastIndexOf("\\"))+"\\reindex_communities";
+		String ncdir=edgefile.substring(0,edgefile.lastIndexOf("/"))+"/reindex_communities";
 		File ncfile=new File(ncdir);
 		ncfile.mkdir();
 		FileWriter[] ncfws=new FileWriter[sub_num];
 		for(int i=0;i<sub_num;i++)
 		{
-			String output=edgefile.substring(0,edgefile.lastIndexOf("\\"))+"\\reindex_communities\\"+"re_subnetwork."+i+".txt";
+			String output=edgefile.substring(0,edgefile.lastIndexOf("/"))+"/reindex_communities/"+"re_subnetwork."+i+".txt";
 			ncfws[i]=new FileWriter(output);
 		}
 		//create a dir for old edge files
-		String oedir=edgefile.substring(0,edgefile.lastIndexOf("\\"))+"\\edgefiles";
+		String oedir=edgefile.substring(0,edgefile.lastIndexOf("/"))+"/edgefiles";
 		File oefile=new File(oedir);
 		oefile.mkdir();
 		FileWriter[] oefws=new FileWriter[sub_num];
 		for(int i=0;i<sub_num;i++)
 		{
-			String output=edgefile.substring(0,edgefile.lastIndexOf("\\"))+"\\edgefiles\\"+"edgefile."+i+".txt";
+			String output=edgefile.substring(0,edgefile.lastIndexOf("/"))+"/edgefiles/"+"edgefile."+i+".txt";
 			oefws[i]=new FileWriter(output);
 		}
 		//create a dir for new edge files
-		String nedir=edgefile.substring(0,edgefile.lastIndexOf("\\"))+"\\reindex_edgefiles";
+		String nedir=edgefile.substring(0,edgefile.lastIndexOf("/"))+"/reindex_edgefiles";
 		File nefile=new File(nedir);
 		nefile.mkdir();
 		FileWriter[] nefws=new FileWriter[sub_num];
 		for(int i=0;i<sub_num;i++)
 		{
-			String output=edgefile.substring(0,edgefile.lastIndexOf("\\"))+"\\reindex_edgefiles\\"+"re_edgefile."+i+".txt";
+			String output=edgefile.substring(0,edgefile.lastIndexOf("/"))+"/reindex_edgefiles/"+"re_edgefile."+i+".txt";
 			nefws[i]=new FileWriter(output);
 		}		
-		
-		//TODO: 
+		//line: file# #node #comm shareNode
+		FileWriter record=new FileWriter(dir.substring(0,dir.lastIndexOf("/"))+"/subnetworks.info.txt");
+		record.write("file_index	node_num	community_num\n");
 		for(int i=0;i<comms.length;i++)
 		{
 			String[] ps=comms[i].getName().split("\\.");
 			int file_index=Integer.parseInt(ps[ps.length-2]);
 			HashMap<Integer,Integer> nodes_index=new HashMap<Integer,Integer>();  // node: old_index,new_index
 			int nindex=0;
+			int comindex=0;
 			BufferedReader br=new BufferedReader(new FileReader(comms[i]));
 			while((line=br.readLine())!=null)
 			{
@@ -511,22 +513,20 @@ public class DataPreprocess {
 						reline+=nodes_index.get(node).toString()+"	";
 				}
 				ncfws[file_index].write(reline.trim()+"\n");
+				comindex++;
 			}
 			extraEdges(edgefile,oefws[file_index],nefws[file_index],nodes_index);
+			record.write(file_index+"	"+nindex+"	"+comindex+"\n"); //\t
 			br.close();
 			ncfws[file_index].close();
 			oefws[file_index].close();
 			nefws[file_index].close();
 		}
-
+		record.close();
 	}
 	//For each file: extra the edges according the nodes from extra community's
 	public static String extraEdges(String edgefile,FileWriter fw,FileWriter refw, HashMap<Integer,Integer> nodes_index) throws IOException
 	{
-//		String output=edgefile.substring(0,edgefile.length()-4)+findex+".txt";
-//		String reoutput=edgefile.substring(0,edgefile.length()-4)+findex+".reindex.txt";
-//		FileWriter fw=new FileWriter(output);
-//		FileWriter refw=new FileWriter(reoutput);
 		fw.write("Nodes: "+nodes_index.size()+"\n");
 		refw.write("Nodes: "+nodes_index.size()+"\n");
 		BufferedReader br=new BufferedReader(new FileReader(edgefile));
@@ -596,6 +596,7 @@ public class DataPreprocess {
 			node_index++;
 		}
 		FileWriter fw=new FileWriter(output);
+		fw.write("Nodes: "+node_index+"\n");
 		Iterator it=label_nodes.entrySet().iterator();
 		while(it.hasNext())
 		{
