@@ -296,6 +296,7 @@ public class ExpEvaluation {
 	}
 
 	//Omega Index
+	//TODO: improve 
 	public static double omegaIndex(String labelfile, String exfile, String dsName)throws IOException
 	{
 		double omega=0.0;
@@ -358,6 +359,7 @@ public class ExpEvaluation {
 	}
 	
 	//normalized mutual information
+	//TODO: check different version
 	public static double NMI(String labelfile, String exfile,String dsName)throws IOException
 	{
 		double nmi=0.0;

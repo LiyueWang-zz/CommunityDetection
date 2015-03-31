@@ -11,13 +11,15 @@ public class SparseMatrix
 	int n_rows, n_cols;
 	LinkedList<SparseMatrixEntry>[] rows;  //suppose in one row, the entries are ordered from small col_index to large col_index
 	LinkedList<SparseMatrixEntry>[] cols;  //suppose ordered too
-
+	double[] row_sums; //root of sum for each row
+	
 	public SparseMatrix(LinkedList<SparseMatrixEntry>[] rows, LinkedList<SparseMatrixEntry>[] cols)
 	{
 		this.rows = rows;
 		this.cols = cols;
 		this.n_rows = rows.length;
 		this.n_cols = cols.length;
+		
 	}
 
 	//TODO: check correct 
@@ -331,6 +333,28 @@ public class SparseMatrix
 			Collections.sort(this.cols[i], new SparseMatrixComparatorIndex());
 	}
 
+	//compute root of sum for each row[(v1^2+v2^2+...)^0.5], use for computing similarity
+	void compute_row_sum()
+	{
+		row_sums=new double[this.n_rows];
+		Arrays.fill(row_sums,0.0);
+		for(int i=0;i<this.n_rows;i++)
+		{
+			double sum=0.0;
+			for(Iterator it=this.rows[i].iterator();it.hasNext();)
+			{
+				SparseMatrixEntry entry=(SparseMatrixEntry)it.next();
+				sum+=entry.value*entry.value;
+			}
+			row_sums[i]=Math.pow(sum, 0.5);
+		}
+	}
+	//get the root of sum for row i
+	double get_row_sum(int i)
+	{
+		return row_sums[i];
+	}
+	
 	public void save_to_file(String path) throws Exception
 	{
 		FileWriter fw=new FileWriter(path);
@@ -376,6 +400,7 @@ public class SparseMatrix
 		fw.close();
 		System.out.println("Save the CompleteMatrix of SparseMatrix to "+path+" Successfully!");
 	}
+	
 /////////////////////////// Useless  //////////////////////////////////////////////////////////	
 	public void check_consistency() throws Exception
 	{

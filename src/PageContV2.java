@@ -94,7 +94,7 @@ public class PageContV2 {
 		System.out.println("Memory cost-1(adj_matrix): "+memory_cost1+" bytes.");
 		
 //		double[][] pathContributionV1=approx_pathcont_matrix(adj_matrix,1-DAMPLE_FACTOR,0.01,1.0);
-		SparseMatrix pathContribution=approx_pathcont(adj_matrix,1-DAMPLE_FACTOR,0.01,1.0);
+		SparseMatrix pathContribution=approx_pathcont_sparsematrix(adj_matrix,1-DAMPLE_FACTOR,0.01,1.0);
 
 		long mend2=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
 		long memory_cost2=mend2-mbegin;
@@ -110,15 +110,17 @@ public class PageContV2 {
 		tran_matrix=null;
 //		SparseMatrix pathContribution=SparseMatrix.create_from_2d_array(pathContributionV1);
 		SparseMatrix pageContribution=compute_pagecont(pageRank,pathContribution);
-		SparseMatrix simi_matrix=compute_similarity(pageContribution);
+		String simifile=datafile.substring(0,datafile.length()-4)+"_approx_0.01_simiMatrix.txt";
+		compute_similarity_v2(pageContribution,simifile);
+//		SparseMatrix simi_matrix=compute_similarity(pageContribution);
 		pageContribution=null;
 		
 		String outfile_app=datafile.substring(0,datafile.length()-4)+"_approx_0.01_";
 //		pathContribution.save_to_file(outfile_app+"pathCont.txt");
 //		pageContribution.save_to_file(outfile_app+"pageCont.txt");
-		simi_matrix.save_to_file(outfile_app+"simiMatrix.txt");
-		simi_matrix.save_all_to_file(outfile_app+"simiMatrixFull.txt");
-		simi_matrix=null;
+//		simi_matrix.save_to_file(outfile_app+"simiMatrix.txt");
+//		simi_matrix.save_all_to_file(outfile_app+"simiMatrixFull.txt");
+//		simi_matrix=null;
 		//*/
 					
 		/**
@@ -146,7 +148,7 @@ public class PageContV2 {
 		SparseMatrix adj_matrix=init_adj_matrix(datafile,weighted);	
 		double alpha=1-DAMPLE_FACTOR;
 		String outfile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\testcase\\com-dblp.ungraph0.04-17-0.01.txt";						
-		approx_pathcont(17,adj_matrix,alpha,0.01,15,outfile);
+		approx_pathcont_vector(17,adj_matrix,alpha,0.01,15,outfile);
 	}
 	/* if graph with weight, adj_matrix element is weight, otherwise 1
 	 * adj_matrix[i][j]=1 if exits edge(j,i)
@@ -446,9 +448,83 @@ public class PageContV2 {
 		similarity=dotsum/(sum1*sum2);
 		return similarity;
 	}
+	
+	//compute similarity matrix using cosine similarity, to save space, write to file directly
+	public static void compute_similarity_v2(SparseMatrix pagecm,String outfile) throws IOException
+	{
+		int nodes_num=pagecm.n_rows;
+		pagecm.compute_row_sum();
+		FileWriter fw=new FileWriter(outfile);
+		fw.write(""+pagecm.n_rows+" "+pagecm.n_cols+"\n");
+		for(int i=0;i<nodes_num;i++)
+		{
+			fw.write(i+":1.0");
+			for(int j=i+1;j<nodes_num;j++)
+			{
+				double simi=dot_sum(pagecm.rows[i],pagecm.rows[j])/(pagecm.get_row_sum(i)*pagecm.get_row_sum(j));
+				if(simi>0.0)
+				{
+					BigDecimal b=new   BigDecimal(simi);
+					double value=b.setScale(10, BigDecimal.ROUND_HALF_UP).doubleValue(); 
+					fw.write(" "+j+":"+value);
+				}
+			}
+			fw.write("\n");
+		}
+		fw.close();
+		return;
+	}
+	
+	//compute similarity between each pair of nodes
+	public static double dot_sum(LinkedList<SparseMatrixEntry> vec1,LinkedList<SparseMatrixEntry> vec2)
+	{
+		double dotsum=0.0;
+		
+		Iterator iter1 = vec1.iterator();
+		Iterator iter2 = vec2.iterator();
+		if(!iter1.hasNext() || !iter2.hasNext())
+			return dotsum;
+
+		SparseMatrixEntry m_entry1 = (SparseMatrixEntry) iter1.next();
+		SparseMatrixEntry m_entry2 = (SparseMatrixEntry) iter2.next();
+		while(true)
+		{
+			if(m_entry1.index == m_entry2.index)
+			{
+				dotsum += m_entry1.value * m_entry2.value;
+				if(!iter1.hasNext() || !iter2.hasNext())
+					break;
+				m_entry1 = (SparseMatrixEntry)iter1.next();
+				m_entry2 = (SparseMatrixEntry)iter2.next();
+			}
+			else if(m_entry1.index < m_entry2.index)
+			{
+				if(!iter1.hasNext())
+					break;
+				m_entry1 = (SparseMatrixEntry) iter1.next();
+			}
+			else //m_entry1.index > m_entry2.index
+			{
+				if(!iter2.hasNext())
+					break;
+				m_entry2 = (SparseMatrixEntry) iter2.next();
+			}
+		}
+		return dotsum;
+	}
+	
+	//An approximation algorithm[By Andersen et al] to compute path contribution matrix: save space
+//	public static SparseMatrix approx_pathcont(SparseMatrix adj_matirx, double alpha,double theta, double pmax)throws IOException
+//	{
+//		int n=adj_matirx.n_cols;
+//		for(int i=0;i<n;i++)
+//		{
+//			double[] vec=approx_pathcont_vector(i,adj_matirx,alpha,theta,pmax,"");
+//		}
+//	}
 
 	//An approximation algorithm[By Andersen et al] to compute path contribution vector
-	public static double[] approx_pathcont(int v_index,SparseMatrix adj_matirx, double alpha,double theta, double pmax,String outfile)throws IOException
+	public static double[] approx_pathcont_vector(int v_index,SparseMatrix adj_matirx, double alpha,double theta, double pmax,String outfile)throws IOException
 	{
 		FileWriter fw=new FileWriter(outfile);
 		
@@ -577,8 +653,8 @@ public class PageContV2 {
 		return p;
 	}
 	
-	// slower than approx_pathcont_matrix, but save space
-	public static SparseMatrix approx_pathcont(SparseMatrix adj_matirx, double alpha,double theta, double pmax)
+	//slower than approx_pathcont_matrix, but save space
+	public static SparseMatrix approx_pathcont_sparsematrix(SparseMatrix adj_matirx, double alpha,double theta, double pmax)
 	{
 		SparseMatrix p=SparseMatrix.create_zero_matrix(adj_matirx.n_rows,adj_matirx.n_cols);
 		SparseMatrix r=SparseMatrix.create_identity_matrix(adj_matirx.n_rows,adj_matirx.n_cols);
