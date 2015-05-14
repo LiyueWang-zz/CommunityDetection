@@ -100,7 +100,8 @@ public class PageCont {
 		double[] new_prv=new double[n];
 		for(int i=0;i<n;i++)
 		{
-			prv[i]=1.0/n;
+//			prv[i]=1.0/n;
+			prv[i]=1.0;
 		}
 		for(int it=0;it<ITERATIONS;it++)
 		{
@@ -111,7 +112,7 @@ public class PageCont {
 				{
 					new_prv[i]+=tran_matrix[i][j]*prv[j];
 				}
-				//new_prv[i]=new_prv[i]*DAMPLE_FACTOR+(1-DAMPLE_FACTOR)/n;
+//				new_prv[i]=new_prv[i]*DAMPLE_FACTOR+(1-DAMPLE_FACTOR)/n;
 				new_prv[i]=new_prv[i]*DAMPLE_FACTOR+(1-DAMPLE_FACTOR);
 			}
 			System.arraycopy(new_prv,0,prv,0,n);			
@@ -128,7 +129,8 @@ public class PageCont {
 		double[] new_prv=new double[n];
 		for(int i=0;i<n;i++)
 		{
-			prv[i]=1.0/n;
+//			prv[i]=1.0/n;
+			prv[i]=1.0;
 		}
 		int it=0;
 		for(it=0;;it++)
@@ -140,7 +142,7 @@ public class PageCont {
 				{
 					new_prv[i]+=tran_matrix[i][j]*prv[j];
 				}
-				//new_prv[i]=new_prv[i]*DAMPLE_FACTOR+(1-DAMPLE_FACTOR)/n;
+//				new_prv[i]=new_prv[i]*DAMPLE_FACTOR+(1-DAMPLE_FACTOR)/n;
 				new_prv[i]=new_prv[i]*DAMPLE_FACTOR+(1-DAMPLE_FACTOR);
 			}
 			

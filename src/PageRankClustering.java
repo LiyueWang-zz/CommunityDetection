@@ -80,18 +80,32 @@ public class PageRankClustering {
 		//writeToFile(datafile,simi_matrix);
 		
 //		String datafile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\testbenchmark\\com-amazon.ungraph0.05.small.reindex.txt";		
-		String datafile=args[0];
-		compareV1V2(datafile,begin);
+//		String datafile=args[0];
+//		compareV1V2(datafile,begin);
 		
-//		MyGraph mg=MyGraph.create_from_file(datafile);
-//		double[] pr=PageCont.compute_pageRank_thresh(mg, 0.85, null);
-//		for(int i=0;i<pr.length;i++)
-//			System.out.print(pr[i]+" ");
-//		System.out.println();
-//		SparseMatrix sm=SparseMatrix.create_from_graph(mg, 0.85);
-//		SparseMatrix pathcont=PageCont.get_path_cont_matrix(sm,pageRank);
-//		double[][] pathcont_matrix=pathcont.get_2dim_array();
-//		writeToFile(datafile,pathcont_matrix);
+//		String datafile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\DBLP\\com-dblp.ungraph0.04.small.reindex.txt";
+//		SparseMatrix adj_matrix=PageContV2.init_adj_matrix(datafile,false);	
+//		VarKMCluster vkmc=new VarKMCluster();
+//		ArrayList<Integer> cluster=vkmc.pagerank_nibble(1,6570,0.6,4,adj_matrix);
+//		if(cluster!=null)
+//		{
+//			for(int k:cluster)
+//				System.out.print(k+"	"); //\t
+//			System.out.println();
+//		}
+		
+		example();
+		
+//		String datafile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\DBLP\\com-dblp.ungraph0.04.small.reindex.txt";
+//		String commfile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\DBLP\\com-dblp.top5000.cmty.clean0.04.reindex.txt";
+		
+//		String datafile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\DBLP\\com-dblp.ungraph1.0.full.reindex.txt";
+//		String commfile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\DBLP\\com-dblp.all.cmty.clean1.0.reindex.txt";
+//			
+//		SparseMatrix adj_matrix=PageContV2.init_adj_matrix(datafile,false);	
+//		ArrayList<ArrayList<Integer>> communities=GraphStatistics.readComm(commfile);
+//		double cond=GraphStatistics.compute_conductance(adj_matrix,communities);
+//		System.out.println("cond="+cond);
 		
 		//test memory
 		long mend=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
@@ -104,6 +118,42 @@ public class PageRankClustering {
 		System.out.println("Time cost: "+Long.toString(time_cost)+"ms");
 	}
 
+	// for writing thesis
+	public static void example()throws IOException
+	{
+		String datafile="E:\\MyDropbox\\Dropbox\\Study\\SFU\\SFU-CourseStudy\\2014Fall-726-A3\\ASN\\project\\example\\graph1.txt";		
+		boolean weighted=false;	
+		PageCont.DAMPLE_FACTOR=0.8;
+		PageCont.ITERATIONS=50;
+		double[][] adj_matrix=PageCont.init_adj_matrix(datafile,weighted);
+		double[][] tran_matrix=PageCont.init_tran_matrix(adj_matrix);
+		double[] pageRank=PageCont.compute_pageRank(tran_matrix);
+		System.out.println("PageRank Vector:");
+		for(int i=0;i<pageRank.length;i++)
+			System.out.print(pageRank[i]+"	");
+		System.out.println();
+		double[][] pathContribution=PageCont.compute_pathcont(tran_matrix);
+		System.out.println("pathCont Matrix:");
+		for(int i=0;i<pathContribution.length;i++)
+		{
+			for(int j=0;j<pathContribution[i].length;j++)
+				System.out.print(pathContribution[i][j]+"	");
+			System.out.println();
+		}
+		System.out.println();
+		
+		double[][] pageContribution=PageCont.compute_pagecont(pageRank,pathContribution);
+		
+		System.out.println("pageCont Matrix:");
+		for(int i=0;i<pageContribution.length;i++)
+		{
+			for(int j=0;j<pageContribution[i].length;j++)
+				System.out.print(pageContribution[i][j]+"	");
+			System.out.println();
+		}
+		System.out.println();
+	}
+	
 	// compare the result between double[][] version and SparseMatrix version to make sure the correct of SparseMatrix version
 	public static void compareV1V2(String datafile,long begin) throws Exception
 	{

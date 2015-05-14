@@ -124,6 +124,7 @@ public class PageContV2 {
 		/**
 		 * Approxmation Version 2
 		 */
+		//step-1
 		SparseMatrix adj_matrix=init_adj_matrix(datafile,weighted);
 		
 		long mend1=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
@@ -133,9 +134,21 @@ public class PageContV2 {
 		long end1=System.currentTimeMillis();
 		long time_cost1=end1-begin; //unit: ms
 		System.out.println("Time cost-1: "+Long.toString(time_cost1)+"ms");
+		//step-2
+		SparseMatrix tran_matrix=init_tran_matrix(adj_matrix);
+		double[] pageRank=compute_pageRank_thresh(tran_matrix);
 		
-		String simifile=datafile.substring(0,datafile.length()-4)+"_approx_0.01_simiMatrix.txt";;
-		compute_similarity_v3(adj_matrix,1-DAMPLE_FACTOR,0.01,1.0,simifile);
+		long mend2=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+		long memory_cost2=mend2-mbegin;
+		System.out.println("Memory cost-2(pathCont): "+memory_cost2+" bytes.");
+		
+		long end2=System.currentTimeMillis();
+		long time_cost2=end2-begin; //unit: ms
+		System.out.println("Time cost-2: "+Long.toString(time_cost2)+"ms");
+		//step-3
+		tran_matrix=null;
+		String pagefile=datafile.substring(0,datafile.length()-4)+"_approx_0.01_pageCont.txt";
+		compute_pagecont_v2(pageRank,adj_matrix,1-DAMPLE_FACTOR,0.01,1.0,pagefile);
 		/**
 		 * Temporary test
 		 */
@@ -247,7 +260,8 @@ public class PageContV2 {
 		double[] new_prv=new double[n];
 		for(int i=0;i<n;i++)
 		{
-			prv[i]=1.0/n;
+//			prv[i]=1.0/n;
+			prv[i]=1.0;
 		}
 		int it=0;
 		for(it=0;;it++)
@@ -260,7 +274,7 @@ public class PageContV2 {
 					SparseMatrixEntry entry=(SparseMatrixEntry)iter.next();
 					new_prv[i]+=(entry.value)*prv[entry.index];
 				}
-				//new_prv[i]=new_prv[i]*DAMPLE_FACTOR+(1-DAMPLE_FACTOR)/n;
+//				new_prv[i]=new_prv[i]*DAMPLE_FACTOR+(1-DAMPLE_FACTOR)/n;
 				new_prv[i]=new_prv[i]*DAMPLE_FACTOR+(1-DAMPLE_FACTOR); //No divide n
 			}
 			
@@ -315,6 +329,7 @@ public class PageContV2 {
 		
 		//pagecm[i][j]=prv[j]*pathcm[i][j]/pathcm[j][j];
 		for(int i = 0; i < nodes_num; i++)
+		{
 			for(Iterator<SparseMatrixEntry> iter = pathcm.rows[i].iterator(); iter.hasNext(); )
 			{
 				SparseMatrixEntry entry=(SparseMatrixEntry)iter.next();
@@ -326,8 +341,47 @@ public class PageContV2 {
 				pagecm.rows[i].add(new SparseMatrixEntry(value,index_j));
 				pagecm.cols[index_j].add(new SparseMatrixEntry(value,i));
 			}
+		}
 
 		return pagecm;
+	}
+	
+	//to save space, compute the page contribution vector for each node and write to the file
+	public static void compute_pagecont_v2(double[] prv,SparseMatrix adj_matrix,double alpha,double theta, double pmax,String outfile) throws IOException
+	{	
+		int nodes_num=adj_matrix.n_rows;
+		//pagecm[i][j]=prv[j]*pathcm[i][j]/pathcm[j][j];
+		//pagecm[j][j]=alpha;
+		FileWriter fw=new FileWriter(outfile);
+		fw.write(""+adj_matrix.n_rows+" "+adj_matrix.n_cols+"\n");
+		double[] pathv_kk=new double[nodes_num];
+		for(int i=0;i<nodes_num;i++)
+		{
+			double[] pathv_i=approx_pathcont_vector(i,adj_matrix,alpha,theta,pmax);
+			pathv_kk[i]=pathv_i[i];
+		}
+		for(int i=0;i<nodes_num;i++)
+		{
+			double[] pathv_i=approx_pathcont_vector(i,adj_matrix,alpha,theta,pmax);
+			StringBuilder sb=new StringBuilder();
+			for(int j=0;j<nodes_num;j++)
+			{
+				double pagev_i_j=alpha;
+				if(i!=j)
+				{
+					pagev_i_j=prv[j]*pathv_i[j]/pathv_kk[j];
+				}
+				if(pagev_i_j>0.0)
+				{
+					BigDecimal b=new   BigDecimal(pagev_i_j);
+					double value=b.setScale(10, BigDecimal.ROUND_HALF_UP).doubleValue(); 
+					sb.append(j+":"+value+" ");
+				}
+			}
+			fw.write(sb.toString().trim()+"\n");
+		}
+		fw.close();
+		return ;
 	}
 	
 	//TODO: tricky set CONVERGENCE_THRESH according the number of nodes
