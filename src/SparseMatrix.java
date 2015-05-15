@@ -96,6 +96,49 @@ public class SparseMatrix
 		return new SparseMatrix(rows, cols);
 	}
 
+	//first line: #rows #cols
+	//row: col:value col:value ...
+	public static SparseMatrix create_from_file(String path) throws Exception
+	{
+		BufferedReader reader = new BufferedReader( new FileReader(path) );
+
+		String line = reader.readLine();	//Dimensions
+		StringTokenizer tokenizer = new StringTokenizer(line);
+		int n_rows = Integer.parseInt( tokenizer.nextToken() );
+		int n_cols = Integer.parseInt( tokenizer.nextToken() );
+
+		if(tokenizer.hasMoreTokens())
+			throw new Exception("Invalid first line in matrix file.");
+
+		LinkedList<SparseMatrixEntry>[] rows = new LinkedList[n_rows];
+		LinkedList<SparseMatrixEntry>[] cols = new LinkedList[n_cols];
+		for(int i = 0; i < n_rows; i++)
+			rows[i] = new LinkedList<SparseMatrixEntry>();
+		for(int i = 0; i < n_cols; i++)
+			cols[i] = new LinkedList<SparseMatrixEntry>(); 
+
+		SparseMatrix matrix = new SparseMatrix(rows, cols);
+
+		for(int row = 0; row < n_rows; row++)
+		{
+			line = reader.readLine();	//row: col:value col:value ...
+			String[] parts=line.split("\\s");
+			for(int i=0;i<parts.length;i++)
+			{
+				String[] pair=parts[i].split(":");
+				int col = Integer.parseInt( pair[0] );
+				double value = Double.parseDouble(pair[1] );
+
+				matrix.rows[row].add( new SparseMatrixEntry(value, col) );
+				matrix.cols[col].add( new SparseMatrixEntry(value, row) );
+				
+			}
+		}
+
+		System.out.println("Loaded matrix from" + path);
+		return matrix;
+	}
+	
 	public static SparseMatrix matrix_multiply(SparseMatrix M_1, SparseMatrix M_2) throws Exception 
 	{
 		LinkedList<SparseMatrixEntry>[] res_rows = new LinkedList[M_1.n_rows];
@@ -445,64 +488,6 @@ public class SparseMatrix
 					return energy;
 			}
 		return energy;
-	}
-	
-
-	
-	//first line: #rows #cols
-	//row: col:value col:value ...
-	public static SparseMatrix load_from_file(String path) throws Exception
-	{
-		BufferedReader reader = new BufferedReader( new FileReader(path) );
-
-		String s = reader.readLine();	//Dimensions
-		StringTokenizer tokenizer = new StringTokenizer(s);
-		int n_rows = Integer.parseInt( tokenizer.nextToken() );
-		int n_cols = Integer.parseInt( tokenizer.nextToken() );
-
-		if(tokenizer.hasMoreTokens())
-			throw new Exception("Invalid first line in matrix file.");
-
-		LinkedList<SparseMatrixEntry>[] rows = new LinkedList[n_rows];
-		LinkedList<SparseMatrixEntry>[] cols = new LinkedList[n_cols];
-		for(int i = 0; i < n_rows; i++)
-			rows[i] = new LinkedList<SparseMatrixEntry>();
-		for(int i = 0; i < n_cols; i++)
-			cols[i] = new LinkedList<SparseMatrixEntry>(); 
-
-		SparseMatrix matrix = new SparseMatrix(rows, cols);
-
-		for(int row = 0; row < n_rows; row++)
-		{
-			s = reader.readLine();	//row: col:value col:value ...
-			tokenizer = new StringTokenizer(s);
-
-			String temp = tokenizer.nextToken();
-			if(temp.charAt(temp.length() - 1) != ':')
-				throw new Exception("Invalid line in matrix file; row: " + (row + 1));
-			if( Integer.parseInt( temp.substring(0, temp.length() - 1) ) != row )
-				throw new Exception("Invalid line in matrix file; row: " + (row + 1));
-
-			while(true)
-			{
-				if(!tokenizer.hasMoreTokens())
-					throw new Exception("Missing $ at the end of line " + row);
-
-				temp = tokenizer.nextToken();
-				if(temp.equals("$"))
-					break;
-
-				int colon_index = temp.indexOf(':');
-				int col = Integer.parseInt( temp.substring(0, colon_index) );
-				double value = Double.parseDouble( temp.substring(colon_index + 1) );
-
-				matrix.rows[row].add( new SparseMatrixEntry(value, col) );
-				matrix.cols[col].add( new SparseMatrixEntry(value, row) );
-			}
-		}
-
-		System.out.println("Loaded matrix from" + path);
-		return matrix;
 	}
 	
 /*

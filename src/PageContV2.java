@@ -124,6 +124,7 @@ public class PageContV2 {
 		/**
 		 * Approxmation Version 2
 		 */
+		/*
 		//step-1
 		SparseMatrix adj_matrix=init_adj_matrix(datafile,weighted);
 		
@@ -149,6 +150,12 @@ public class PageContV2 {
 		tran_matrix=null;
 		String pagefile=datafile.substring(0,datafile.length()-4)+"_approx_0.01_pageCont.txt";
 		compute_pagecont_v2(pageRank,adj_matrix,1-DAMPLE_FACTOR,0.01,1.0,pagefile);
+		*/
+		
+		//step-4
+		SparseMatrix pagecm=SparseMatrix.create_from_file(datafile);
+		String simifile=datafile.substring(0,datafile.length()-4)+"_simiMatrix.txt";
+		compute_similarity_v2(pagecm,simifile);
 		/**
 		 * Temporary test
 		 */
@@ -545,7 +552,9 @@ public class PageContV2 {
 		fw.write(""+pagecm.n_rows+" "+pagecm.n_cols+"\n");
 		for(int i=0;i<nodes_num;i++)
 		{
-			fw.write(i+":1.0");
+			StringBuilder sb=new StringBuilder();
+			
+			sb.append(i+":1.0");
 			for(int j=i+1;j<nodes_num;j++)
 			{
 				double simi=dot_sum(pagecm.rows[i],pagecm.rows[j])/(pagecm.get_row_sum(i)*pagecm.get_row_sum(j));
@@ -553,10 +562,10 @@ public class PageContV2 {
 				{
 					BigDecimal b=new   BigDecimal(simi);
 					double value=b.setScale(10, BigDecimal.ROUND_HALF_UP).doubleValue(); 
-					fw.write(" "+j+":"+value);
+					sb.append(" "+j+":"+value);
 				}
 			}
-			fw.write("\n");
+			fw.write(sb+"\n");
 		}
 		fw.close();
 		return;
