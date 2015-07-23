@@ -43,6 +43,12 @@ public class DataPreprocess {
 				//Step-3:reindex the subnetworks and extra the edgefile for each subnetwork
 				extraSubedges(dir,edgefile);
 			}
+                        else if(model.equals("-4"))
+			{
+			 	String simifile=args[1];
+                                double threshold=Double.parseDouble(args[2]);
+				smThreshold(simifile,threshold);  
+                        }
 			else
 				printHelp();
 		}
@@ -82,6 +88,7 @@ public class DataPreprocess {
 		System.out.println("	-1	cmtyFile //clean the community file");
 		System.out.println("	-2	cmtyFile ungraphFile percent //extra subnetworks according percent");
 		System.out.println("	-3	cmtyFile ungraphFile subnum //extra subnetworks according bigclam paper");
+		System.out.println("	-4	simiFile threshold //clean similarity matrix with threshold");
 	}
 	
 	/**
@@ -191,6 +198,39 @@ public class DataPreprocess {
 		fw.close();
 	}
 	
+        /**
+          * normalized the similarity with threshold
+          */
+        public static void smThreshold(String simifile,double threshold) throws IOException
+        {
+		String line="";
+		String output=simifile.substring(0,simifile.length()-4)+"_"+threshold+".txt";
+		
+		FileWriter fw=new FileWriter(output);
+
+		BufferedReader br=new BufferedReader(new FileReader(simifile));
+		line=br.readLine();
+		fw.write(line.trim()+"\n");
+		int total=0;
+		while((line=br.readLine())!=null)
+                {
+                        String[] parts=line.trim().split(" ");
+                        for(String pair:parts)
+                        { 
+			    String[] ps=pair.split(":");
+                            double value=Double.parseDouble(ps[1]);
+                            if(value>threshold)
+                            {
+				fw.write(pair+" ");
+                            }
+                        }
+			fw.write("\n");
+                }
+		br.close();   
+                fw.close();         
+        }
+
+
 	/**
 	 * For Big Dataset, extract subnetworks according percent
 	 */
