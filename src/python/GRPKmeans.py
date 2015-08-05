@@ -146,7 +146,7 @@ def Kmeans(X,k_cluster,fcluster):
 
         for node in clusters[j]:
 
-            fcluster.write(str(node+1)+"	")
+            fcluster.write(str(node)+"	")
 
         fcluster.write('\n')
 

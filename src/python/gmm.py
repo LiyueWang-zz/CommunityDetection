@@ -61,8 +61,8 @@ def GMMCluster(cosinesm,k_cluster,fgmm,fgmm2):
         clusters[cluster[i]].append(i)
     for j in range(k_cluster):
         for node in clusters[j]:
-            fgmm.write(str(node+1)+"	")
-            fgmm2.write(str(node+1)+"	")
+            fgmm.write(str(node)+"	")
+            fgmm2.write(str(node)+"	")
         fgmm.write('\n')
         fgmm2.write('\n')
     fgmm.write('\n\n')

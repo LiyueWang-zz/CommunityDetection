@@ -103,7 +103,7 @@ def Kmeans(cosinesm,k_cluster,fcluster):
     for j in range(k_cluster):
         #fcluster.write("cluster-"+str(j)+": ")
         for node in clusters[j]:
-            fcluster.write(str(node+1)+"	")
+            fcluster.write(str(node)+"	")
         fcluster.write('\n')
   
 	
