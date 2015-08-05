@@ -49,6 +49,11 @@ public class DataPreprocess {
                                 double threshold=Double.parseDouble(args[2]);
 				smThreshold(simifile,threshold);  
                         }
+                        else if(model.equals("-5"))
+			{
+			 	String clusterfile=args[1];
+				modifyClusterIndex(clusterfile);  
+                        }
 			else
 				printHelp();
 		}
@@ -89,6 +94,7 @@ public class DataPreprocess {
 		System.out.println("	-2	cmtyFile ungraphFile percent //extra subnetworks according percent");
 		System.out.println("	-3	cmtyFile ungraphFile subnum //extra subnetworks according bigclam paper");
 		System.out.println("	-4	simiFile threshold //clean similarity matrix with threshold");
+		System.out.println("	-5	clusterFile //modify node index -1 for experiment cluster results");
 	}
 	
 	/**
@@ -439,12 +445,12 @@ public class DataPreprocess {
 		//filter nodes that have less than two communities
 		ArrayList<Integer> nodes=new ArrayList<Integer>(); //nodes have more than two communities
 		Set<Map.Entry<Integer, ArrayList<Integer>>> sets = node_comms.entrySet();  
-        for(Map.Entry<Integer, ArrayList<Integer>> entry : sets) { 
-        	int key=entry.getKey();
-        	ArrayList<Integer> value=entry.getValue();
-        	if(value.size()>=2)
+        	for(Map.Entry<Integer, ArrayList<Integer>> entry : sets) { 
+        		int key=entry.getKey();
+        		ArrayList<Integer> value=entry.getValue();
+        		if(value.size()>=2)
 				nodes.add(key);
-        } 
+        	} 
 		
 		System.out.println("#of nodes(>2comms)="+nodes.size());
 		//random select sub_num=500 nodes that have at least two communities
@@ -596,6 +602,33 @@ public class DataPreprocess {
 		
 		return "";
 	}
+
+	public static void modifyClusterIndex(String clusterfile) throws IOException
+	{
+		String line="";
+		String output=clusterfile.substring(0,clusterfile.length()-4)+"_plus1.txt";
+		
+		FileWriter fw=new FileWriter(output);
+
+		BufferedReader br=new BufferedReader(new FileReader(clusterfile));
+		line=br.readLine();
+		fw.write(line.trim()+"\n");
+		int total=0;
+		while((line=br.readLine())!=null)
+                {
+			StringBuilder sb=new StringBuilder();
+                        String[] parts=line.trim().split("	");
+                        for(String part:parts)
+                        { 
+				int node=Integer.parseInt(part)-1;
+				sb.append(node+"	");
+                        }
+			fw.write(sb.toString().trim()+"\n");
+                }
+		br.close();   
+                fw.close();   		
+	} 
+
 
 	/**
 	 * For small Dataset
